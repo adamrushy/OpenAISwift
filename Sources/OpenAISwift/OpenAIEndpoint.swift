@@ -1,8 +1,5 @@
 //
-//  File.swift
-//  
-//
-//  Created by Adam Rush on 06/12/2022.
+//  Created by Adam Rush - OpenAISwift
 //
 
 import Foundation
