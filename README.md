@@ -19,9 +19,9 @@ You can use Swift Package Manager to integrate the library by adding the followi
 
 Import the module in your application.
 
-import OpenAISwift
+`import OpenAISwift`
 
-Set your API token from creating one here.
+Set your API token from creating one [here](https://beta.openai.com/account/api-keys).
 
 `let openAPI = OpenAISwift(authToken: "TOKEN")`
 
