@@ -19,7 +19,7 @@ extension OpenAISwift {
     ///   - prompt: The Text Prompt
     ///   - model: The AI Model to Use
     ///   - completionHandler: Returns an OpenAI Data Model
-    public func sendCompletion(with prompt: String, model: String, completionHandler: @escaping ((OpenAI?, OpenAIError?) -> Void)) {
+    public func sendCompletion(with prompt: String, model: String, completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
         let endpoint = Endpoint.completions
         let body = Command(prompt: prompt, model: model)
         let request = prepareRequest(endpoint, body: body)
@@ -27,13 +27,13 @@ extension OpenAISwift {
         let session = URLSession.shared
         let task = session.dataTask(with: request) { (data, response, error) in
             if let error = error {
-                completionHandler(nil, OpenAIError.genericError(error: error))
+				completionHandler(.failure(.genericError(error: error)))
             } else if let data = data {
                 do {
                     let res = try JSONDecoder().decode(OpenAI.self, from: data)
-                    completionHandler(res, nil)
+					completionHandler(.success(res))
                 } catch {
-                    completionHandler(nil, OpenAIError.decodingError(error: error))
+					completionHandler(.failure(.decodingError(error: error)))
                 }
             }
         }
