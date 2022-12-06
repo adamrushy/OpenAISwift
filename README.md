@@ -13,7 +13,7 @@ Copy source files into your own project
 
 You can use Swift Package Manager to integrate the library by adding the following dependency in your Package.swift file or by adding directly within Xcode
 
-.Package(url: "https://github.com/adamrushy/OpenAISwift.git", majorVersion: 1)
+`.Package(url: "https://github.com/adamrushy/OpenAISwift.git", majorVersion: 1)`
 
 ## Example Usage 🤩
 
@@ -27,6 +27,7 @@ Set your API token from creating one here.
 
 Create a call to the completions API, passing in the text prompt and the specific data model to be used.
 
+```
 openAPI.sendCompletion(with: "A random emoji", model: "text-davinci-003") { result, error in
     if let error {
         print("We have an error \(error)")
@@ -36,6 +37,7 @@ if let result {
     print(result.choices.first?.text ?? "")
     }
 }
+```
 
 The API will return an OpenAPI object containing the responding text items.
 
