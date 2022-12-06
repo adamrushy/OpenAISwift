@@ -25,15 +25,34 @@ Set your API token from creating one [here](https://beta.openai.com/account/api-
 
 `let openAPI = OpenAISwift(authToken: "TOKEN")`
 
-Create a call to the completions API, passing in the text prompt and the specific data model to be used.
+Create a call to the completions API, passing in a text prompt.
 
-```
-openAPI.sendCompletion(with: "A random emoji", model: "text-davinci-003") { result, error in
-    // Access The Result or Error
+```swift
+openAPI.sendCompletion(with: "A random emoji") { result in // Result<OpenAI, OpenAIError>
+    // switch on result to get the response or error 
 }
 ```
 
-The API will return an OpenAPI object containing the responding text items.
+The API will return an `OpenAPI` object containing the corresponding text items.
+
+You can also specify a different model to use for the completions. The `sendCompletion` method uses the `text-davinci-003` model by default. 
+
+```swift
+openAPI.sendCompletion(with: "A random emoji", model: .gpt3(.ada)) { result in // Result<OpenAI, OpenAIError>
+    // switch on result to get the response or error 
+}
+```
+For a full list of the supported models see [OpenAIModelType.swift](https://github.com/adamrushy/OpenAISwift/blob/main/Sources/OpenAISwift/Models/OpenAIModelType.swift). For more information on the models see the [OpenAI API Documentation](https://beta.openai.com/docs/models).
+
+OpenAISwift also supports Swift concurrency so you can use Swift’s async/await syntax to fetch completions.
+
+```swift
+do {
+	let result = try await openAPI.sendCompletion(with: "A random emoji")
+} catch {
+	print(error.localizedDescription)	
+}
+```
 
 ## Contribute ❤️
 
