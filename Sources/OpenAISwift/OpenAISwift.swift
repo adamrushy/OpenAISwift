@@ -61,3 +61,20 @@ extension OpenAISwift {
         return request
     }
 }
+
+extension OpenAISwift {
+	/// Send a Completion to the OpenAI API
+	/// - Parameters:
+	///   - prompt: The Text Prompt
+	///   - model: The AI Model to Use
+	/// - Returns: Returns an OpenAI Data Model
+	@available(swift 5.5)
+	@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+	public func sendCompletion(with prompt: String, model: String) async throws -> OpenAI {
+		return try await withCheckedThrowingContinuation { continuation in
+			sendCompletion(with: prompt, model: model) { result in
+				continuation.resume(with: result)
+			}
+		}
+	}
+}
