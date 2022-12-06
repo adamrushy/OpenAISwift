@@ -17,23 +17,23 @@ extension OpenAISwift {
     /// Send a Completion to the OpenAI API
     /// - Parameters:
     ///   - prompt: The Text Prompt
-    ///   - model: The AI Model to Use
+    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
     ///   - completionHandler: Returns an OpenAI Data Model
-    public func sendCompletion(with prompt: String, model: String, completionHandler: @escaping ((OpenAI?, OpenAIError?) -> Void)) {
+	public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
         let endpoint = Endpoint.completions
-        let body = Command(prompt: prompt, model: model)
+		let body = Command(prompt: prompt, model: model.modelName)
         let request = prepareRequest(endpoint, body: body)
-        
+
         let session = URLSession.shared
         let task = session.dataTask(with: request) { (data, response, error) in
             if let error = error {
-                completionHandler(nil, OpenAIError.genericError(error: error))
+				completionHandler(.failure(.genericError(error: error)))
             } else if let data = data {
                 do {
                     let res = try JSONDecoder().decode(OpenAI.self, from: data)
-                    completionHandler(res, nil)
+					completionHandler(.success(res))
                 } catch {
-                    completionHandler(nil, OpenAIError.decodingError(error: error))
+					completionHandler(.failure(.decodingError(error: error)))
                 }
             }
         }
@@ -60,4 +60,21 @@ extension OpenAISwift {
         
         return request
     }
+}
+
+extension OpenAISwift {
+	/// Send a Completion to the OpenAI API
+	/// - Parameters:
+	///   - prompt: The Text Prompt
+	///   - model:  The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
+	/// - Returns: Returns an OpenAI Data Model
+	@available(swift 5.5)
+	@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+	public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci)) async throws -> OpenAI {
+		return try await withCheckedThrowingContinuation { continuation in
+			sendCompletion(with: prompt, model: model) { result in
+				continuation.resume(with: result)
+			}
+		}
+	}
 }
