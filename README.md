@@ -29,13 +29,7 @@ Create a call to the completions API, passing in the text prompt and the specifi
 
 ```
 openAPI.sendCompletion(with: "A random emoji", model: "text-davinci-003") { result, error in
-    if let error {
-        print("We have an error \(error)")
-    }
-            
-if let result {
-    print(result.choices.first?.text ?? "")
-    }
+    // Access The Result or Error
 }
 ```
 
