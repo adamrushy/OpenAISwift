@@ -1,6 +1,6 @@
 # OpenAI API Client Library in Swift
 
-This is a wrapper library to access OpenAI HTTP API's. The full API docs can be found here:
+This is a community-maintained library to access OpenAI HTTP API's. The full API docs can be found here:
 https://beta.openai.com/api-docs
 
 ## Installation 💻
@@ -29,17 +29,17 @@ Create a call to the completions API, passing in a text prompt.
 
 ```swift
 openAPI.sendCompletion(with: "A random emoji") { result in // Result<OpenAI, OpenAIError>
-    // switch on result to get the response or error 
+    // switch on result to get the response or error
 }
 ```
 
 The API will return an `OpenAPI` object containing the corresponding text items.
 
-You can also specify a different model to use for the completions. The `sendCompletion` method uses the `text-davinci-003` model by default. 
+You can also specify a different model to use for the completions. The `sendCompletion` method uses the `text-davinci-003` model by default.
 
 ```swift
 openAPI.sendCompletion(with: "A random emoji", model: .gpt3(.ada)) { result in // Result<OpenAI, OpenAIError>
-    // switch on result to get the response or error 
+    // switch on result to get the response or error
 }
 ```
 For a full list of the supported models see [OpenAIModelType.swift](https://github.com/adamrushy/OpenAISwift/blob/main/Sources/OpenAISwift/Models/OpenAIModelType.swift). For more information on the models see the [OpenAI API Documentation](https://beta.openai.com/docs/models).
@@ -50,7 +50,7 @@ OpenAISwift also supports Swift concurrency so you can use Swift’s async/await
 do {
 	let result = try await openAPI.sendCompletion(with: "A random emoji")
 } catch {
-	print(error.localizedDescription)	
+	print(error.localizedDescription)
 }
 ```
 
