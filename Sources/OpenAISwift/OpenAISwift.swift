@@ -14,13 +14,13 @@ public class OpenAISwift {
 }
 
 extension OpenAISwift {
-    /// Send a Completion to the OpenAI API
-    /// - Parameters:
-    ///   - prompt: The Text Prompt
-    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
-    ///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
-    ///   - completionHandler: Returns an OpenAI Data Model
-    public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16, completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
+	/// Send a Completion to the OpenAI API
+	/// - Parameters:
+	///   - prompt: The Text Prompt
+	///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
+	///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
+	///   - completionHandler: Returns an OpenAI Data Model
+	public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16, completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
         let endpoint = Endpoint.completions
 		let body = Command(prompt: prompt, model: model.modelName, maxTokens: maxTokens)
         let request = prepareRequest(endpoint, body: body)
@@ -67,8 +67,8 @@ extension OpenAISwift {
 	/// Send a Completion to the OpenAI API
 	/// - Parameters:
 	///   - prompt: The Text Prompt
-	///   - model:  The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
-    ///   - maxTokens:  The limit character for the returned response, defaults to 16 as per the API
+	///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
+	///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
 	/// - Returns: Returns an OpenAI Data Model
 	@available(swift 5.5)
 	@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
