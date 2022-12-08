@@ -14,27 +14,27 @@ public class OpenAISwift {
 }
 
 extension OpenAISwift {
-	/// Send a Completion to the OpenAI API
-	/// - Parameters:
-	///   - prompt: The Text Prompt
-	///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
-	///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
-	///   - completionHandler: Returns an OpenAI Data Model
-	public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16, completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
+    /// Send a Completion to the OpenAI API
+    /// - Parameters:
+    ///   - prompt: The Text Prompt
+    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
+    ///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16, completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
         let endpoint = Endpoint.completions
-		let body = Command(prompt: prompt, model: model.modelName, maxTokens: maxTokens)
+        let body = Command(prompt: prompt, model: model.modelName, maxTokens: maxTokens)
         let request = prepareRequest(endpoint, body: body)
-
+        
         let session = URLSession.shared
         let task = session.dataTask(with: request) { (data, response, error) in
             if let error = error {
-				completionHandler(.failure(.genericError(error: error)))
+                completionHandler(.failure(.genericError(error: error)))
             } else if let data = data {
                 do {
                     let res = try JSONDecoder().decode(OpenAI.self, from: data)
-					completionHandler(.success(res))
+                    completionHandler(.success(res))
                 } catch {
-					completionHandler(.failure(.decodingError(error: error)))
+                    completionHandler(.failure(.decodingError(error: error)))
                 }
             }
         }
@@ -64,19 +64,19 @@ extension OpenAISwift {
 }
 
 extension OpenAISwift {
-	/// Send a Completion to the OpenAI API
-	/// - Parameters:
-	///   - prompt: The Text Prompt
-	///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
-	///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
-	/// - Returns: Returns an OpenAI Data Model
-	@available(swift 5.5)
-	@available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-	public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16) async throws -> OpenAI {
-		return try await withCheckedThrowingContinuation { continuation in
-			sendCompletion(with: prompt, model: model, maxTokens: maxTokens) { result in
-				continuation.resume(with: result)
-			}
-		}
-	}
+    /// Send a Completion to the OpenAI API
+    /// - Parameters:
+    ///   - prompt: The Text Prompt
+    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.davinci)` by default which is the most capable model
+    ///   - maxTokens: The limit character for the returned response, defaults to 16 as per the API
+    /// - Returns: Returns an OpenAI Data Model
+    @available(swift 5.5)
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16) async throws -> OpenAI {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendCompletion(with: prompt, model: model, maxTokens: maxTokens) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
 }
