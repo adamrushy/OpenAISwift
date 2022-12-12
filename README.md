@@ -5,7 +5,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/adamrushy/OpenAISwift/Swift)
 [![](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager/)
 
-![Twitter Follow](https://img.shields.io/twitter/follow/adam9rush?style=social)
+[![Twitter Follow](https://img.shields.io/twitter/follow/adam9rush?style=social)](https://twitter.com/adam9rush)
 
 # OpenAI API Client Library in Swift
 
