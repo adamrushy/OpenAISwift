@@ -73,10 +73,14 @@ extension OpenAISwift {
     @available(swift 5.5)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16) async throws -> OpenAI {
-        return try await withCheckedThrowingContinuation { continuation in
-            sendCompletion(with: prompt, model: model, maxTokens: maxTokens) { result in
-                continuation.resume(with: result)
-            }
-        }
+      
+      let endpoint = Endpoint.completions
+      let body = Command(prompt: prompt, model: model.modelName, maxTokens: maxTokens)
+      let request = prepareRequest(endpoint, body: body)
+      
+      let session = URLSession.shared
+      let (data, _) = try await session.data(for: request)
+      
+      return try JSONDecoder().decode(OpenAI.self, from: data)
     }
 }
