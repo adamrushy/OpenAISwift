@@ -10,7 +10,7 @@
 # OpenAI API Client Library in Swift
 
 This is a community-maintained library to access OpenAI HTTP API's. The full API docs can be found here:
-https://beta.openai.com/api-docs
+https://beta.openai.com/docs
 
 ## Installation 💻
 
