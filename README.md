@@ -1,3 +1,12 @@
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fadamrushy%2FOpenAISwift%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/adamrushy/OpenAISwift)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fadamrushy%2FOpenAISwift%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/adamrushy/OpenAISwift)
+
+![](https://img.shields.io/github/license/adamrushy/OpenAISwift)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/adamrushy/OpenAISwift/Swift)
+[![](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager/)
+
+![Twitter Follow](https://img.shields.io/twitter/follow/adam9rush?style=social)
+
 # OpenAI API Client Library in Swift
 
 This is a community-maintained library to access OpenAI HTTP API's. The full API docs can be found here:
