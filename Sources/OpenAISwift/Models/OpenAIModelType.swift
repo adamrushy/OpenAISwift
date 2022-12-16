@@ -15,10 +15,14 @@ public enum OpenAIModelType {
     /// ``Codex`` Family of Models
     case codex(Codex)
     
+    /// ``Feature``Family of Models
+    case feature(Feature)
+    
     public var modelName: String {
         switch self {
         case .gpt3(let model): return model.rawValue
         case .codex(let model): return model.rawValue
+        case .feature(let model): return model.rawValue
         }
     }
     
@@ -63,5 +67,17 @@ public enum OpenAIModelType {
         ///
         /// > Model Name: code-cushman-001
         case cushman = "code-cushman-001"
+    }
+    
+    
+    /// A set of models that are feature specific.
+    ///
+    ///  For example using the Edits endpoint requires a specific data model
+    ///
+    ///  You can read the [API Docs](https://beta.openai.com/docs/guides/completion/editing-text)
+    public enum Feature: String {
+        
+        /// > Model Name: text-davinci-edit-001
+        case davinci = "text-davinci-edit-001"
     }
 }
