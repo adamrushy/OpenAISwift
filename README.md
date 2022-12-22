@@ -32,13 +32,18 @@ Import the module in your application.
 
 Set your API token from creating one [here](https://beta.openai.com/account/api-keys).
 
-`let openAPI = OpenAISwift(authToken: "TOKEN")`
+`let openAI = OpenAISwift(authToken: "TOKEN")`
 
 Create a call to the completions API, passing in a text prompt.
 
 ```swift
-openAPI.sendCompletion(with: "A random emoji") { result in // Result<OpenAI, OpenAIError>
-    // switch on result to get the response or error
+openAI.sendCompletion(with: "Hello how are you", maxTokens: 100) { result in // Result<OpenAI, OpenAIError>
+    switch result {
+    case .success(let success):
+        print(success.choices.first?.text ?? "")
+    case .failure(let failure):
+        print(failure.localizedDescription)
+    }
 }
 ```
 
