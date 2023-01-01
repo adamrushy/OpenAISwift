@@ -52,7 +52,7 @@ The API will return an `OpenAPI` object containing the corresponding text items.
 You can also specify a different model to use for the completions. The `sendCompletion` method uses the `text-davinci-003` model by default.
 
 ```swift
-openAPI.sendCompletion(with: "A random emoji", model: .gpt3(.ada)) { result in // Result<OpenAI, OpenAIError>
+openAI.sendCompletion(with: "A random emoji", model: .gpt3(.ada)) { result in // Result<OpenAI, OpenAIError>
     // switch on result to get the response or error
 }
 ```
