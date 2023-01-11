@@ -62,9 +62,9 @@ OpenAISwift also supports Swift concurrency so you can use Swift’s async/await
 
 ```swift
 do {
-	let result = try await openAPI.sendCompletion(with: "A random emoji")
+    let result = try await openAPI.sendCompletion(with: "A random emoji")
 } catch {
-	print(error.localizedDescription)
+    print(error.localizedDescription)
 }
 ```
 
