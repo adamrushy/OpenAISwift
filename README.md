@@ -47,7 +47,7 @@ openAI.sendCompletion(with: "Hello how are you", maxTokens: 100) { result in // 
 }
 ```
 
-The API will return an `OpenAPI` object containing the corresponding text items.
+The API will return an `OpenAI` object containing the corresponding text items.
 
 You can also specify a different model to use for the completions. The `sendCompletion` method uses the `text-davinci-003` model by default.
 
@@ -62,7 +62,7 @@ OpenAISwift also supports Swift concurrency so you can use Swift’s async/await
 
 ```swift
 do {
-    let result = try await openAPI.sendCompletion(with: "A random emoji")
+    let result = try await openAI.sendCompletion(with: "A random emoji")
 } catch {
     print(error.localizedDescription)
 }
