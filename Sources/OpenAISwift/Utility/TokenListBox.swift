@@ -2,8 +2,8 @@
 //  TokenListBox.swift
 //  Pods
 //
-//  Created by 传骑 on 2/13/23
-//  Copyright (c) 2023 Rajax Network Technology Co., Ltd. All rights reserved.
+//  Created by KittenYang on 2/13/23
+//  Copyright (c) 2023 QITAO Network Technology Co., Ltd. All rights reserved.
 //
     
 
