@@ -11,19 +11,27 @@ import Foundation
 
 public struct Prompts {
 	
+	var enable: Bool = false
+	
 	public private(set) var historyList = TokenListBox<String>()
 	
 	public mutating func appendToHistoryList(userText: String, responseText: String) async {
-		await self.historyList.append("User: \(userText)\n\n\nChatGPT: \(responseText)<|im_end|>\n")
+		if enable {
+			await self.historyList.append("User: \(userText)\n\n\nChatGPT: \(responseText)<|im_end|>\n")
+		}
 	}
 	
 	public func generateChatGPTPrompt(from text: String) async -> String {
-		var prompt = await basePrompt + historyListText + "User: \(text)\nChatGPT:"
-		if prompt.count > (4000 * 4) {
-			_ = await historyList.dropFirst()
-			prompt = await generateChatGPTPrompt(from: text)
+		if enable {
+			var prompt = await basePrompt + historyListText + "User: \(text)\nChatGPT:"
+			if prompt.count > (4000 * 4) {
+				_ = await historyList.dropFirst()
+				prompt = await generateChatGPTPrompt(from: text)
+			}
+			return prompt
+		} else {
+			return text
 		}
-		return prompt
 	}
 	
 	private let dateFormatter: DateFormatter = {

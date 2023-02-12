@@ -11,11 +11,12 @@ public enum OpenAIError: Error {
 
 public class OpenAISwift {
     fileprivate(set) var token: String?
-    
-	var promopts = Prompts()
+
+	var promopts: Prompts
 	
-    public init(authToken: String) {
+	public init(authToken: String, promoptsHistoryEnable: Bool = false) {
         self.token = authToken
+		self.promopts = Prompts(enable: promoptsHistoryEnable)
     }
 }
 
