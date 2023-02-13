@@ -7,6 +7,15 @@ import FoundationXML
 public enum OpenAIError: Error {
     case genericError(error: Error)
     case decodingError(error: Error)
+	
+	public var message: String {
+		switch self {
+		case .decodingError(let error):
+			return error.localizedDescription
+		case .genericError(let error):
+			return error.localizedDescription
+		}
+	}
 }
 
 public class OpenAISwift {
@@ -99,13 +108,17 @@ extension OpenAISwift {
         let session = URLSession.shared
         let task = session.dataTask(with: request) { (data, response, error) in
 			
-			guard let httpRes = response as? HTTPURLResponse else {
+			guard let httpResponse = response as? HTTPURLResponse else {
 				completionHandler(.failure("Invalid response"))
 				return
 			}
 			
-			guard 200...299 ~= httpRes.statusCode else {
-				completionHandler(.failure("Bad Response: \(httpRes.statusCode)"))
+			guard 200...299 ~= httpResponse.statusCode else {
+				var errMsg = "Bad Response: \(httpResponse.statusCode)"
+				if let data, let resErrMsg = try? JSONDecoder().decode(OpenAIResponse.self, from: data).error?.message {
+					errMsg = resErrMsg
+				}
+				completionHandler(.failure(errMsg))
 				return
 			}
 			
@@ -124,11 +137,19 @@ extension OpenAISwift {
 		let (result, response) = try await URLSession.shared.bytes(for: urlRequest)
 		
 		guard let httpResponse = response as? HTTPURLResponse else {
-			throw "Invalid response"
+			throw OpenAIError.genericError(error: "Invalid response")
 		}
 		
 		guard 200...299 ~= httpResponse.statusCode else {
-			throw "Bad Response: \(httpResponse.statusCode)"
+			var errMsg = "Bad Response: \(httpResponse.statusCode)"
+			var dataString = ""
+			for try await line in result.lines {
+				dataString += line
+			}
+			if !dataString.isEmpty, let data = dataString.data(using: .utf8), let resErrMsg = try? JSONDecoder().decode(OpenAIResponse.self, from: data).error?.message {
+				errMsg = resErrMsg
+			}
+			throw OpenAIError.genericError(error: errMsg)
 		}
 		
 		return AsyncThrowingStream<String, Error> { continuation in
@@ -147,7 +168,7 @@ extension OpenAISwift {
 					await self.promopts.appendToHistoryList(userText: input, responseText: responseText)
 					continuation.finish()
 				} catch {
-					continuation.finish(throwing: error)
+					continuation.finish(throwing: OpenAIError.genericError(error: error))
 				}
 			}
 		}
