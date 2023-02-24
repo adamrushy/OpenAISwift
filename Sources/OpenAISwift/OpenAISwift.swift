@@ -5,6 +5,7 @@ import FoundationXML
 #endif
 
 public enum OpenAIError: Error {
+    case internalError(error: InternalError)
     case genericError(error: Error)
     case decodingError(error: Error)
 }
@@ -15,7 +16,24 @@ public struct RequestError: LocalizedError {
     }
 }
 
+public struct InternalError: LocalizedError {
+    let message: String
+    let type: String
+    let param: String?
+    let code: String?
+    
+    var errorDescription: String {
+        message
+    }
+}
+
+struct ResponseError: Decodable {
+    let error: InternalError
+}
+extension InternalError: Decodable {}
+
 public class OpenAISwift {
+    private let urlSession: URLSession
     fileprivate(set) var token: String
     fileprivate let config: Config
     
@@ -67,7 +85,7 @@ extension OpenAISwift {
             completionHandler(.failure(.decodingError(error: RequestError())))
             return
         }
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let task = urlSession.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 completionHandler(.failure(.genericError(error: error)))
             } else if let data = data {
@@ -75,7 +93,11 @@ extension OpenAISwift {
                     let res = try JSONDecoder().decode(OpenAI.self, from: data)
                     completionHandler(.success(res))
                 } catch {
-                    completionHandler(.failure(.decodingError(error: error)))
+                    if let errorRes = try? JSONDecoder().decode(ResponseError.self, from: data) {
+                        completionHandler(.failure(.internalError(error: errorRes.error)))
+                    } else {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
                 }
             }
         }
@@ -192,13 +214,12 @@ extension OpenAISwift {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(body) {
             request.httpBody = encoded
         }
-        
         return request
     }
 }
