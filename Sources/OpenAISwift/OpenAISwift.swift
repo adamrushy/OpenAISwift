@@ -34,7 +34,7 @@ extension InternalError: Decodable {}
 
 public class OpenAISwift {
     private let urlSession: URLSession
-    fileprivate(set) var token: String
+    private let token: String
     
     public init(urlSession: URLSession = .shared, authToken: String) {
         self.urlSession = urlSession
@@ -77,7 +77,7 @@ extension OpenAISwift {
                 completionHandler(.failure(.genericError(error: error)))
             } else if let data = data {
                 do {
-                    let res = try JSONDecoder().decode(OpenAI.self, from: data)
+                    let res = try JSONDecoder().decode(OpenAI<T>.self, from: data)
                     completionHandler(.success(res))
                 } catch {
                     if let errorRes = try? JSONDecoder().decode(ResponseError.self, from: data) {
@@ -153,7 +153,6 @@ extension OpenAISwift {
                 completionHandler(.success(data))
             }
         }
-        
         task.resume()
     }
     
