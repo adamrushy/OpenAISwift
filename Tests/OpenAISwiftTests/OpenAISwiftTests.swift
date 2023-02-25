@@ -55,6 +55,27 @@ final class OpenAISwiftTests: XCTestCase {
         }
     }
     
+    func testDecodingError() async throws {
+        do {
+            let responseData = try XCTUnwrap("{}".data(using: .utf8))
+            let expectedUrl = try XCTUnwrap(URL(string: "https://api.openai.com/v1/completions"))
+            let expectedToken = try XCTUnwrap(validAuthToken)
+            MockURLProtocol.handlers.add(match: { $0.url == expectedUrl },
+                                         inspect: {
+                XCTAssertEqual($0.allHTTPHeaderFields?["Content-Type"], "application/json")
+                XCTAssertEqual($0.allHTTPHeaderFields?["Authorization"], "Bearer \(expectedToken)")
+            },
+                                         result: .success(.init(statusCode: 500, data: responseData)))
+            let sut = OpenAISwift(urlSession: mockUrlSession, authToken: validAuthToken)
+            
+            _ = try await sut.sendCompletion(with: "Write a haiku")
+            
+            XCTFail("sendCompletion must fail")
+        } catch OpenAIError.decodingError {
+            XCTAssertTrue(true)
+        }
+    }
+    
     func testSuccess() async throws {
         let successData = try XCTUnwrap("""
         {
