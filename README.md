@@ -70,7 +70,7 @@ do {
 
 The latest `gpt-3.5-turbo` model is available too : 
 
-```
+```swift
 func chat() async {
     do {
         let chat: [ChatMessage] = [
