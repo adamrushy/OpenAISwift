@@ -11,5 +11,6 @@ public struct OpenAI: Codable {
 }
 
 public struct Choice: Codable {
-    public let text: String
+    public let text: String?
+    public let message: ChatMessage?
 }
