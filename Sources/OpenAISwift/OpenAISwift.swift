@@ -21,7 +21,7 @@ extension OpenAISwift {
     /// Send a Chat to the OpenAI API
     /// - Parameters:
     ///   - messages: The messages to generate chat completions for
-    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.turbo)` by default which is the most capable model
+    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.chatgpt)` by default which is the most capable model
     ///   - maxTokens: The limit character for the returned response, defaults to 4096 as per the API
     ///   - completionHandler: Returns an OpenAI Data Model
     public func sendChat(with messages: [Message], model: OpenAIModelType = .gpt3(.chatgpt), maxTokens: Int = 4096, temperature: Double = 1, completionHandler: @escaping (Result<ChatResponse, OpenAIError>) -> Void) {
@@ -134,7 +134,7 @@ extension OpenAISwift {
     /// Send a Chat to the OpenAI API
     /// - Parameters:
     ///   - messages: The messages to generate chat completions for
-    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.turbo)` by default which is the most capable model
+    ///   - model: The AI Model to Use. Set to `OpenAIModelType.gpt3(.chatgpt)` by default which is the most capable model
     ///   - maxTokens: The limit character for the returned response, defaults to 4096 as per the API
     ///   - completionHandler: Returns an OpenAI Data Model
     @available(swift 5.5)
