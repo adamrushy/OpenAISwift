@@ -13,9 +13,9 @@ public struct OpenAI<T: Payload>: Codable {
 }
 
 public struct TextResult: Payload {
-    public let text: String?
+    public let text: String
 }
 
 public struct MessageResult: Payload {
-    public let message: ChatMessage?
+    public let message: ChatMessage
 }
