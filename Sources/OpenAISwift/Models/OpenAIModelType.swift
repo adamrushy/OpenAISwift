@@ -30,6 +30,14 @@ public enum OpenAIModelType {
     ///
     /// [GPT-3 Models OpenAI API Docs](https://beta.openai.com/docs/models/gpt-3)
     public enum GPT3: String {
+
+        /// Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration.
+        /// > Model Name: gpt-3.5-turbo
+        case chatgpt = "gpt-3.5-turbo"
+
+        /// Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.
+        /// > Model Name: gpt-3.5-turbo-0301
+        case chatgpt0301 = "gpt-3.5-turbo-0301"
         
         /// Most capable GPT-3 model. Can do any task the other models can do, often with higher quality, longer output and better instruction-following. Also supports inserting completions within text.
         ///
