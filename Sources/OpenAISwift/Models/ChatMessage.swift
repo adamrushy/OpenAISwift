@@ -24,4 +24,12 @@ public struct ChatMessage: Codable {
 public struct ChatConversation: Encodable {
     let messages: [ChatMessage]
     let model: String
+    let maxTokens: Int
+
+    enum CodingKeys: String, CodingKey {
+        case messages
+        case model
+        case maxTokens = "max_tokens"
+    }
+
 }
