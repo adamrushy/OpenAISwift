@@ -75,9 +75,9 @@ extension OpenAISwift {
     ///   - messages: Array of `ChatMessages`
     ///   - model: The Model to use, the only support model is `gpt-3.5-turbo`
     ///   - completionHandler: Returns an OpenAI Data Model
-    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt), completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
+    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt), maxTokens: Int? = nil, completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
         let endpoint = Endpoint.chat
-        let body = ChatConversation(messages: messages, model: model.modelName)
+        let body = ChatConversation(messages: messages, model: model.modelName, maxTokens: maxTokens)
         let request = prepareRequest(endpoint, body: body)
         
         makeRequest(request: request) { result in
@@ -170,9 +170,9 @@ extension OpenAISwift {
     ///   - completionHandler: Returns an OpenAI Data Model
     @available(swift 5.5)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt)) async throws -> OpenAI<MessageResult> {
+    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt), maxTokens: Int? = nil) async throws -> OpenAI<MessageResult> {
         return try await withCheckedThrowingContinuation { continuation in
-            sendChat(with: messages, model: model) { result in
+            sendChat(with: messages, model: model, maxTokens: maxTokens) { result in
                 continuation.resume(with: result)
             }
         }
