@@ -68,6 +68,27 @@ do {
 }
 ```
 
+The latest `gpt-3.5-turbo` model is available too : 
+
+```swift
+func chat() async {
+    do {
+        let chat: [ChatMessage] = [
+            ChatMessage(role: .system, content: "You are a helpful assistant."),
+            ChatMessage(role: .user, content: "Who won the world series in 2020?"),
+            ChatMessage(role: .assistant, content: "The Los Angeles Dodgers won the World Series in 2020."),
+            ChatMessage(role: .user, content: "Where was it played?")
+        ]
+                    
+        let result = try await openAI.sendChat(with: chat)
+        
+        print(result.choices.first?.message?.content ?? "Nothing")
+    } catch {
+        print("Something went wrong")
+    }
+}
+```
+
 ## Contribute ❤️
 
 I created this mainly for fun, we can add more endpoints and explore the library even further. Feel free to raise a PR to help grow the library.
