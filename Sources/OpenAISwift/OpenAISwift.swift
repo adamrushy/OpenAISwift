@@ -103,10 +103,20 @@ extension OpenAISwift {
             if let error = error {
                 completionHandler(.failure(error))
             } else if let data = data {
-                completionHandler(.success(data))
+                if let response = response as? HTTPURLResponse,
+                   !(200..<400).contains(response.statusCode),
+                   let object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any?],
+                   let error = object["error"] as? [String: Any?],
+                    let message = error["message"] as? String {
+                    let userInfo = [NSLocalizedDescriptionKey: message]
+                    let error = NSError(domain: NSCocoaErrorDomain, code: response.statusCode, userInfo: userInfo)
+                    completionHandler(.failure(error))
+                }
+                else {
+                    completionHandler(.success(data))
+                }
             }
         }
-        
         task.resume()
     }
     
