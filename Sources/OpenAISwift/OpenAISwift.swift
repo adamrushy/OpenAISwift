@@ -105,6 +105,7 @@ extension OpenAISwift {
                                     maxTokens: maxTokens,
                                     presencePenalty: presencePenalty,
                                     frequencyPenalty: frequencyPenalty)
+
         let request = prepareRequest(endpoint, body: body)
         
         makeRequest(request: request) { result in
