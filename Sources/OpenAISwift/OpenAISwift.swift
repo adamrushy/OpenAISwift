@@ -74,10 +74,12 @@ extension OpenAISwift {
     /// - Parameters:
     ///   - messages: Array of `ChatMessages`
     ///   - model: The Model to use, the only support model is `gpt-3.5-turbo`
+    ///   - maxTokens: used in OpenAI's text-generating API to specify the maximum number of tokens (words) that should be generated in response to a prompt. This parameter is used to prevent the model from generating excessively long or rambling responses that may not be relevant to the prompt. The actual length of the response may be shorter than the `maxTokens` value if the model determines that it has reached a natural stopping point in the generation process.
+    ///   - temperature: a value that determines the level of creativity and diversity in the output of the API. Temperature values closer to 0 will generate more predictable and conservative output, while higher temperature values will generate more original and surprising output. Essentially, the temperature value controls the randomness or "playfulness" of the generated text. It is measured in units of degrees Celsius and typically ranges from 0.1 to 1.0, with higher values producing more unexpected and diverse output.
     ///   - completionHandler: Returns an OpenAI Data Model
-    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt), maxTokens: Int? = nil, completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
+    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt), maxTokens: Int? = nil, temperature: Double = 1.0, completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
         let endpoint = Endpoint.chat
-        let body = ChatConversation(messages: messages, model: model.modelName, maxTokens: maxTokens)
+        let body = ChatConversation(messages: messages, model: model.modelName, maxTokens: maxTokens, temperature: temperature)
         let request = prepareRequest(endpoint, body: body)
         
         makeRequest(request: request) { result in
@@ -167,12 +169,13 @@ extension OpenAISwift {
     /// - Parameters:
     ///   - messages: Array of `ChatMessages`
     ///   - model: The Model to use, the only support model is `gpt-3.5-turbo`
-    ///   - completionHandler: Returns an OpenAI Data Model
+    ///   - maxTokens: used in OpenAI's text-generating API to specify the maximum number of tokens (words) that should be generated in response to a prompt. This parameter is used to prevent the model from generating excessively long or rambling responses that may not be relevant to the prompt. The actual length of the response may be shorter than the `maxTokens` value if the model determines that it has reached a natural stopping point in the generation process.
+    ///   - temperature: a value that determines the level of creativity and diversity in the output of the API. Temperature values closer to 0 will generate more predictable and conservative output, while higher temperature values will generate more original and surprising output. Essentially, the temperature value controls the randomness or "playfulness" of the generated text. It is measured in units of degrees Celsius and typically ranges from 0.1 to 1.0, with higher values producing more unexpected and diverse output.
     @available(swift 5.5)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt), maxTokens: Int? = nil) async throws -> OpenAI<MessageResult> {
+    public func sendChat(with messages: [ChatMessage], model: OpenAIModelType = .chat(.chatgpt), maxTokens: Int? = nil, temperature: Double = 1.0) async throws -> OpenAI<MessageResult> {
         return try await withCheckedThrowingContinuation { continuation in
-            sendChat(with: messages, model: model, maxTokens: maxTokens) { result in
+            sendChat(with: messages, model: model, maxTokens: maxTokens, temperature: temperature) { result in
                 continuation.resume(with: result)
             }
         }
