@@ -33,5 +33,12 @@ public struct ChatConversation: Encodable {
         case maxTokens = "max_tokens"
         case temperature
     }
+}
 
+public struct ChatError: Codable {
+    public struct Payload: Codable {
+        public let message, type, param, code: String
+    }
+    
+    public let error: Payload
 }
