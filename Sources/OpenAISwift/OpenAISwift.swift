@@ -122,6 +122,33 @@ extension OpenAISwift {
             }
         }
     }
+
+    /// Send a Image generation request to the OpenAI API
+    /// - Parameters:
+    ///   - prompt: The Text Prompt
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+        let endpoint = Endpoint.images
+        let body = ImageGeneration(prompt: prompt, n: numImages, size: size, user: user)
+        let request = prepareRequest(endpoint, body: body)
+
+        makeRequest(request: request) { result in
+            switch result {
+                case .success(let success):
+                    do {
+                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        completionHandler(.success(res))
+                    } catch {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                case .failure(let failure):
+                    completionHandler(.failure(.genericError(error: failure)))
+                }
+        }
+    }
     
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
         let session = URLSession.shared
@@ -227,6 +254,23 @@ extension OpenAISwift {
                      maxTokens: maxTokens,
                      presencePenalty: presencePenalty,
                      frequencyPenalty: frequencyPenalty) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+
+    /// Send a Image generation request to the OpenAI API
+    /// - Parameters:
+    ///   - prompt: The Text Prompt
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    /// - Returns: Returns an OpenAI Data Model
+    @available(swift 5.5)
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil) async throws -> OpenAI<UrlResult> {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendImages(with: prompt, numImages: numImages, size: size, user: user) { result in
                 continuation.resume(with: result)
             }
         }
