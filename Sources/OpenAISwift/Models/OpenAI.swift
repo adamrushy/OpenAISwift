@@ -10,6 +10,7 @@ public struct OpenAI<T: Payload>: Codable {
     public let object: String
     public let model: String?
     public let choices: [T]
+    public let usage: UsageResult
 }
 
 public struct TextResult: Payload {
@@ -18,4 +19,10 @@ public struct TextResult: Payload {
 
 public struct MessageResult: Payload {
     public let message: ChatMessage
+}
+
+public struct UsageResult: Payload {
+    public let prompt_tokens: Int
+    public let completion_tokens: Int
+    public let total_tokens: Int
 }
