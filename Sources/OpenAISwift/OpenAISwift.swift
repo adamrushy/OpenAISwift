@@ -11,9 +11,23 @@ public enum OpenAIError: Error {
 
 public class OpenAISwift {
     fileprivate(set) var token: String?
+    fileprivate let config: Config
     
-    public init(authToken: String) {
+    /// Configuration object for the client
+    public struct Config {
+        
+        /// Initialiser
+        /// - Parameter session: the session to use for network requests.
+        public init(session: URLSession = URLSession.shared) {
+            self.session = session
+        }
+
+        let session:URLSession
+    }
+    
+    public init(authToken: String,config:Config = Config()) {
         self.token = authToken
+        self.config = Config()
     }
 }
 
@@ -98,7 +112,7 @@ extension OpenAISwift {
     }
     
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
-        let session = URLSession.shared
+        let session = config.session
         let task = session.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 completionHandler(.failure(error))
