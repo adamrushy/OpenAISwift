@@ -94,7 +94,7 @@ extension OpenAISwift {
                          maxTokens: Int? = nil,
                          presencePenalty: Double? = 0,
                          frequencyPenalty: Double? = 0,
-                         logitBias: [String: Double]? = nil,
+                         logitBias: [Int: Double]? = nil,
                          completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
         let endpoint = Endpoint.chat
         let body = ChatConversation(user: user,
