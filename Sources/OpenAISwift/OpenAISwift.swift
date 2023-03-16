@@ -25,7 +25,7 @@ public class OpenAISwift {
         let session:URLSession
     }
     
-    public init(authToken: String,config:Config = Config()) {
+    public init(authToken: String, config: Config = Config()) {
         self.token = authToken
         self.config = Config()
     }
