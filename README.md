@@ -82,7 +82,7 @@ func chat() async {
                     
         let result = try await openAI.sendChat(with: chat)
         
-        print(result.choices.first?.message?.content ?? "Nothing")
+        print(result.choices.first?.message.content ?? "Nothing")
     } catch {
         print("Something went wrong")
     }
