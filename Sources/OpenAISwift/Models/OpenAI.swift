@@ -21,7 +21,7 @@ public struct MessageResult: Payload {
     public let message: ChatMessage
 }
 
-public struct UsageResult: Payload {
+public struct UsageResult: Codable {
     public let promptTokens: Int
     public let completionTokens: Int
     public let totalTokens: Int
