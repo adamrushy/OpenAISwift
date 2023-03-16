@@ -11,18 +11,18 @@ public enum OpenAIError: Error {
 }
 
 public struct RequestError: LocalizedError {
-    var errorDescription: String {
-        "Error creating the url"
+    public var errorDescription: String {
+        "Error creating the url."
     }
 }
 
 public struct InternalError: LocalizedError {
-    let message: String
-    let type: String
-    let param: String?
-    let code: String?
+    public let message: String
+    public let type: String
+    public let param: String?
+    public let code: String?
     
-    var errorDescription: String {
+    public var errorDescription: String {
         message
     }
 }
