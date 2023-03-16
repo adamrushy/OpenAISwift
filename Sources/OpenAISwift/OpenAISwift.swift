@@ -82,6 +82,7 @@ extension OpenAISwift {
     ///   - maxTokens: The maximum number of tokens allowed for the generated answer. By default, the number of tokens the model can return will be (4096 - prompt tokens).
     ///   - presencePenalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.
     ///   - frequencyPenalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.
+    ///   - logitBias: Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID in the OpenAI Tokenizer—not English words) to an associated bias value from -100 to 100. Values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
     ///   - completionHandler: Returns an OpenAI Data Model
     public func sendChat(with messages: [ChatMessage],
                          model: OpenAIModelType = .chat(.chatgpt),
@@ -93,6 +94,7 @@ extension OpenAISwift {
                          maxTokens: Int? = nil,
                          presencePenalty: Double? = 0,
                          frequencyPenalty: Double? = 0,
+                         logitBias: [String: Double]? = nil,
                          completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
         let endpoint = Endpoint.chat
         let body = ChatConversation(user: user,
@@ -104,7 +106,8 @@ extension OpenAISwift {
                                     stop: stop,
                                     maxTokens: maxTokens,
                                     presencePenalty: presencePenalty,
-                                    frequencyPenalty: frequencyPenalty)
+                                    frequencyPenalty: frequencyPenalty,
+                                    logitBias: logitBias)
 
         let request = prepareRequest(endpoint, body: body)
         
