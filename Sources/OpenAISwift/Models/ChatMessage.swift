@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Bogdan Farca on 02.03.2023.
 //
@@ -22,16 +22,28 @@ public struct ChatMessage: Codable {
 }
 
 public struct ChatConversation: Encodable {
+    let user: String?
     let messages: [ChatMessage]
     let model: String
+    let temperature: Double?
+    let topProbabilityMass: Double?
+    let choices: Int?
+    let stop: [String]?
     let maxTokens: Int?
-    let temperature: Double
+    let presencePenalty: Double?
+    let frequencyPenalty: Double?
 
     enum CodingKeys: String, CodingKey {
+        case user
         case messages
         case model
-        case maxTokens = "max_tokens"
         case temperature
+        case topProbabilityMass = "top_p"
+        case choices = "n"
+        case stop
+        case maxTokens = "max_tokens"
+        case presencePenalty = "presence_penalty"
+        case frequencyPenalty = "frequency_penalty"
     }
 
 }
