@@ -21,12 +21,16 @@ public enum OpenAIModelType {
     /// ``Chat`` Family of Models
     case chat(Chat)
     
+    /// Other Custom Models
+    case other(String)
+    
     public var modelName: String {
         switch self {
         case .gpt3(let model): return model.rawValue
         case .codex(let model): return model.rawValue
         case .feature(let model): return model.rawValue
         case .chat(let model): return model.rawValue
+        case .other(let modelName): return modelName
         }
     }
     
