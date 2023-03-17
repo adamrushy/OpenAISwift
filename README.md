@@ -58,6 +58,19 @@ openAI.sendCompletion(with: "A random emoji", model: .gpt3(.ada)) { result in //
 ```
 For a full list of the supported models see [OpenAIModelType.swift](https://github.com/adamrushy/OpenAISwift/blob/main/Sources/OpenAISwift/Models/OpenAIModelType.swift). For more information on the models see the [OpenAI API Documentation](https://beta.openai.com/docs/models).
 
+Generate an image using the images API:
+
+```swift
+openAI.sendImages(with: "A 3d render of a rocket ship", numImages: 1, size: .size1024) { result in // Result<OpenAI, OpenAIError>
+    switch result {
+    case .success(let success):
+        print(success.data.first?.url ?? "")
+    case .failure(let failure):
+        print(failure.localizedDescription)
+    }
+}
+```
+
 OpenAISwift also supports Swift concurrency so you can use Swift’s async/await syntax to fetch completions.
 
 ```swift
