@@ -15,10 +15,10 @@ public enum OpenAIModelType {
     /// ``Codex`` Family of Models
     case codex(Codex)
     
-    /// ``Feature``Family of Models
+    /// ``Feature`` Family of Models
     case feature(Feature)
     
-    /// ``Chat``Family of Models
+    /// ``Chat`` Family of Models
     case chat(Chat)
     
     /// Other Custom Models
