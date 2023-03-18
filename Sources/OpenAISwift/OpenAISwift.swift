@@ -12,7 +12,7 @@ public enum OpenAIError: Error {
 
 public struct RequestError: LocalizedError {
     public var errorDescription: String {
-        "Error creating the url"
+        "Error creating the OpenAI API URL."
     }
 }
 
