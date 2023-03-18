@@ -68,30 +68,6 @@ extension OpenAISwift {
         makeRequest(endpoint: endpoint, body: body, completionHandler: completionHandler)
     }
     
-    private func makeRequest<BodyType: Encodable>(endpoint: Endpoint, body: BodyType, completionHandler: @escaping (Result<OpenAI, OpenAIError>) -> Void) {
-        guard let request = prepareRequest(endpoint, body: body) else {
-            completionHandler(.failure(.decodingError(error: RequestError())))
-            return
-        }
-        let task = urlSession.dataTask(with: request) { (data, response, error) in
-            if let error = error {
-                completionHandler(.failure(.genericError(error: error)))
-            } else if let data = data {
-                do {
-                    let res = try JSONDecoder().decode(OpenAI<T>.self, from: data)
-                    completionHandler(.success(res))
-                } catch {
-                    if let errorRes = try? JSONDecoder().decode(ResponseError.self, from: data) {
-                        completionHandler(.failure(.internalError(error: errorRes.error)))
-                    } else {
-                        completionHandler(.failure(.decodingError(error: error)))
-                    }
-                }
-            }
-        }
-        task.resume()
-    }
-    
     /// Send a Chat request to the OpenAI API
     /// - Parameters:
     ///   - messages: Array of `ChatMessages`
@@ -127,31 +103,28 @@ extension OpenAISwift {
                                     maxTokens: maxTokens,
                                     presencePenalty: presencePenalty,
                                     frequencyPenalty: frequencyPenalty)
-
-        let request = prepareRequest(endpoint, body: body)
-        
-        makeRequest(request: request) { result in
-            switch result {
-                case .success(let success):
-                    do {
-                        let res = try JSONDecoder().decode(OpenAI<MessageResult>.self, from: success)
-                        completionHandler(.success(res))
-                    } catch {
-                        completionHandler(.failure(.decodingError(error: error)))
-                    }
-                case .failure(let failure):
-                    completionHandler(.failure(.genericError(error: failure)))
-            }
-        }
+        makeRequest(endpoint: endpoint, body: body, completionHandler: completionHandler)
     }
     
-    private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
-        let session = URLSession.shared
-        let task = session.dataTask(with: request) { (data, response, error) in
+    private func makeRequest<BodyType: Encodable, T: Payload>(endpoint: Endpoint, body: BodyType, completionHandler: @escaping (Result<OpenAI<T>, OpenAIError>) -> Void) {
+        guard let request = prepareRequest(endpoint, body: body) else {
+            completionHandler(.failure(.decodingError(error: RequestError())))
+            return
+        }
+        let task = urlSession.dataTask(with: request) { (data, response, error) in
             if let error = error {
-                completionHandler(.failure(error))
+                completionHandler(.failure(.genericError(error: error)))
             } else if let data = data {
-                completionHandler(.success(data))
+                do {
+                    let res = try JSONDecoder().decode(OpenAI<T>.self, from: data)
+                    completionHandler(.success(res))
+                } catch {
+                    if let errorRes = try? JSONDecoder().decode(ResponseError.self, from: data) {
+                        completionHandler(.failure(.internalError(error: errorRes.error)))
+                    } else {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                }
             }
         }
         task.resume()
