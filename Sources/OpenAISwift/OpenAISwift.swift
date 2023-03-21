@@ -171,17 +171,17 @@ extension OpenAISwift {
     /// - Parameters:
     ///   - input: The input text to classify
     ///   - model: The moderation model to use. Both models are free; `latest` is 'automatically upgraded over time' which `stable` will be upgraded only after advanced notice.
-    ///   - completionHandler: Returns an OpenAI Data Model
-    public func sendModeration(with input: String, model: OpenAIModelType = .moderation(.latest), completionHandler: @escaping (Result<OpenAI<ModerationResult>, OpenAIError>) -> Void) {
+    ///   - completionHandler: Returns the result of the moderation.
+    public func sendModeration(with input: String, model: OpenAIModelType = .moderation(.latest), completionHandler: @escaping (Result<Moderation.Result, OpenAIError>) -> Void) {
         let endpoint = Endpoint.moderations
-        let body = ModerationRequest(input: input, model: model.modelName)
+        let body = Moderation.Request(input: input, model: model.modelName)
         let request = prepareRequest(endpoint, body: body)
         
         makeRequest(request: request) { result in
                 switch result {
                 case .success(let success):
                     do {
-                        let res = try JSONDecoder().decode(OpenAI<ModerationResult>.self, from: success)
+                        let res = try JSONDecoder().decode(Moderation.Result.self, from: success)
                         completionHandler(.success(res))
                     } catch {
                         completionHandler(.failure(.decodingError(error: error)))
@@ -325,10 +325,10 @@ extension OpenAISwift {
     /// - Parameters:
     ///   - input: The input text to classify
     ///   - model: The moderation model to use. Both models are free; `latest` is 'automatically upgraded over time' which `stable` will be upgraded only after advanced notice.
-    /// - Returns: The result of the moderation request.
+    /// - Returns: The result of the moderation.
     @available(swift 5.5)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    public func sendModeration(with input: String, model: OpenAIModelType = .moderation(.latest)) async throws -> OpenAI<ModerationResult> {
+    public func sendModeration(with input: String, model: OpenAIModelType = .moderation(.latest)) async throws -> Moderation.Result {
         try await withCheckedThrowingContinuation { continuation in
             sendModeration(with: input, model: model) { result in
                 continuation.resume(with: result)
