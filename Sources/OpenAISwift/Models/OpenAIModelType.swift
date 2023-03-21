@@ -21,12 +21,16 @@ public enum OpenAIModelType {
     /// ``Chat``Family of Models
     case chat(Chat)
     
+    /// ``Moderation`` Family of Models
+    case moderation(Moderation)
+    
     public var modelName: String {
         switch self {
         case .gpt3(let model): return model.rawValue
         case .codex(let model): return model.rawValue
         case .feature(let model): return model.rawValue
         case .chat(let model): return model.rawValue
+        case .moderation(let model): return model.rawValue
         }
     }
     
@@ -96,5 +100,13 @@ public enum OpenAIModelType {
         /// Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.
         /// > Model Name: gpt-3.5-turbo-0301
         case chatgpt0301 = "gpt-3.5-turbo-0301"
+    }
+    
+    public enum Moderation: String {
+        /// Automatically upgraded over time for improved accuracy, but may alter expected deterministic results.
+        case latest = "text-moderation-latest"
+        
+        /// Lower accuracy, but provides advanced notice prior to internal upgrades.
+        case stable = "text-moderation-stable"
     }
 }

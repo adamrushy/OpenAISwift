@@ -167,6 +167,31 @@ extension OpenAISwift {
         }
     }
     
+    /// Given an input text, outputs if the model classifies it as violating OpenAI's content policy.
+    /// - Parameters:
+    ///   - input: The input text to classify
+    ///   - model: The moderation model to use. Both models are free; `latest` is 'automatically upgraded over time' which `stable` will be upgraded only after advanced notice.
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendModeration(with input: String, model: OpenAIModelType = .moderation(.latest), completionHandler: @escaping (Result<OpenAI<ModerationResult>, OpenAIError>) -> Void) {
+        let endpoint = Endpoint.moderations
+        let body = ModerationRequest(input: input, model: model.modelName)
+        let request = prepareRequest(endpoint, body: body)
+        
+        makeRequest(request: request) { result in
+                switch result {
+                case .success(let success):
+                    do {
+                        let res = try JSONDecoder().decode(OpenAI<ModerationResult>.self, from: success)
+                        completionHandler(.success(res))
+                    } catch {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                case .failure(let failure):
+                    completionHandler(.failure(.genericError(error: failure)))
+                }
+            }
+    }
+    
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
         let session = config.session
         let task = session.dataTask(with: request) { (data, response, error) in
@@ -291,6 +316,21 @@ extension OpenAISwift {
     public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil) async throws -> OpenAI<UrlResult> {
         return try await withCheckedThrowingContinuation { continuation in
             sendImages(with: prompt, numImages: numImages, size: size, user: user) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
+    /// Given an input text, outputs if the model classifies it as violating OpenAI's content policy.
+    /// - Parameters:
+    ///   - input: The input text to classify
+    ///   - model: The moderation model to use. Both models are free; `latest` is 'automatically upgraded over time' which `stable` will be upgraded only after advanced notice.
+    /// - Returns: The result of the moderation request.
+    @available(swift 5.5)
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func sendModeration(with input: String, model: OpenAIModelType = .moderation(.latest)) async throws -> OpenAI<ModerationResult> {
+        try await withCheckedThrowingContinuation { continuation in
+            sendModeration(with: input, model: model) { result in
                 continuation.resume(with: result)
             }
         }
