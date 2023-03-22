@@ -170,7 +170,19 @@ extension OpenAISwift {
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
         let session = config.session
         let task = session.dataTask(with: request) { (data, response, error) in
+
             if let error = error {
+                completionHandler(.failure(error))
+            } else if let response = response as? HTTPURLResponse,
+                      response.statusCode != 200 {
+                
+                let domain = "openaiswift"
+                let code = response.statusCode
+                let message = String(data:data ?? Data(),encoding: .utf8) ?? ""
+                let userInfo = [NSLocalizedDescriptionKey: "Error:\(message)"]
+
+                let error = NSError(domain: domain, code: code, userInfo: userInfo)
+                
                 completionHandler(.failure(error))
             } else if let data = data {
                 completionHandler(.success(data))
