@@ -15,14 +15,19 @@ public enum OpenAIModelType {
     /// ``Codex`` Family of Models
     case codex(Codex)
     
-    /// ``Feature``Family of Models
+    /// ``Feature`` Family of Models
     case feature(Feature)
     
-    /// ``Chat``Family of Models
+    /// ``Chat`` Family of Models
     case chat(Chat)
     
+
     /// ``Moderation`` Family of Models
     case moderation(Moderation)
+
+    /// Other Custom Models
+    case other(String)
+
     
     public var modelName: String {
         switch self {
@@ -31,6 +36,7 @@ public enum OpenAIModelType {
         case .feature(let model): return model.rawValue
         case .chat(let model): return model.rawValue
         case .moderation(let model): return model.rawValue
+        case .other(let modelName): return modelName
         }
     }
     
