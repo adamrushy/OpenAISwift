@@ -176,12 +176,13 @@ extension OpenAISwift {
             } else if let response = response as? HTTPURLResponse,
                       response.statusCode != 200 {
                 
-                let domain = "openaiswift"
                 let code = response.statusCode
-                let message = String(data:data ?? Data(),encoding: .utf8) ?? ""
-                let userInfo = [NSLocalizedDescriptionKey: "Error:\(message)"]
+                var responseString:String?
+                if let data {
+                    responseString = String(data:data,encoding: .utf8)
+                }
 
-                let error = NSError(domain: domain, code: code, userInfo: userInfo)
+                let error = OAISNetworkError.badResponse(code: code, response: responseString)
                 
                 completionHandler(.failure(error))
             } else if let data = data {
