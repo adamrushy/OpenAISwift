@@ -181,7 +181,6 @@ extension OpenAISwift {
                 switch result {
                 case .success(let success):
                     do {
-                        print(String(data: success, encoding: .utf8))
                         let res = try JSONDecoder().decode(OpenAI<Moderation.Result>.self, from: success)
                         completionHandler(.success(res))
                     } catch {
