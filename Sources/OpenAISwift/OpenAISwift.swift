@@ -7,6 +7,7 @@ import FoundationXML
 public enum OpenAIError: Error {
     case genericError(error: Error)
     case decodingError(error: Error)
+    case badResponse(code: Int, response: String?)
 }
 
 public class OpenAISwift {
@@ -174,17 +175,16 @@ extension OpenAISwift {
             if let error = error {
                 completionHandler(.failure(error))
             } else if let response = response as? HTTPURLResponse,
-                      response.statusCode != 200 {
-                
+                      !(200...299).contains(response.statusCode) {
+                //Responses outside the 2xx range don't necessarily throw errors, but we should treat them as errors
+                //E.g. a rejected api key will generate a 401 and a helpful message, but no error
                 let code = response.statusCode
                 var responseString:String?
                 if let data {
                     responseString = String(data:data,encoding: .utf8)
                 }
 
-                let error = OAISNetworkError.badResponse(code: code, response: responseString)
-                
-                completionHandler(.failure(error))
+                completionHandler(.failure(OpenAIError.badResponse(code: code, response: responseString)))
             } else if let data = data {
                 completionHandler(.success(data))
             }
