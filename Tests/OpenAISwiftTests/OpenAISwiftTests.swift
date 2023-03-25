@@ -42,7 +42,7 @@ final class OpenAISwiftTests: XCTestCase {
                 XCTAssertEqual($0.allHTTPHeaderFields?["Authorization"], "Bearer ")
             },
                                          result: .success(.init(statusCode: 200, data: errorData)))
-            let sut = OpenAISwift(urlSession: mockUrlSession, authToken: fakeAuthToken)
+            let sut = OpenAISwift(authToken: fakeAuthToken, config: .init(session: mockUrlSession))
             
             _ = try await sut.sendCompletion(with: "Write a haiku")
             
@@ -66,7 +66,7 @@ final class OpenAISwiftTests: XCTestCase {
                 XCTAssertEqual($0.allHTTPHeaderFields?["Authorization"], "Bearer \(expectedToken)")
             },
                                          result: .success(.init(statusCode: 500, data: responseData)))
-            let sut = OpenAISwift(urlSession: mockUrlSession, authToken: validAuthToken)
+            let sut = OpenAISwift(authToken: validAuthToken, config: .init(session: mockUrlSession))
             
             _ = try await sut.sendCompletion(with: "Write a haiku")
             
@@ -105,12 +105,12 @@ final class OpenAISwiftTests: XCTestCase {
             XCTAssertEqual($0.allHTTPHeaderFields?["Authorization"], "Bearer \(expectedToken)")
         },
                                      result: .success(.init(statusCode: 200, data: successData)))
-        let sut = OpenAISwift(urlSession: mockUrlSession, authToken: validAuthToken)
+        let sut = OpenAISwift(authToken: validAuthToken, config: .init(session: mockUrlSession))
         
         let response = try await sut.sendCompletion(with: "Write a haiku")
         
         XCTAssertEqual(response.model, "text-davinci-003")
-        XCTAssertEqual(response.choices.count, 1)
-        XCTAssertEqual(response.choices.first?.text, "Summer sun warms my skin, Feel happiness radiates, Peaceful")
+        XCTAssertEqual(response.choices?.count, 1)
+        XCTAssertEqual(response.choices?.first?.text, "Summer sun warms my skin, Feel happiness radiates, Peaceful")
     }
 }

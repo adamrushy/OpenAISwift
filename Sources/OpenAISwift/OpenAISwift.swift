@@ -34,7 +34,6 @@ struct ResponseError: Decodable {
 extension InternalError: Decodable {}
 
 public class OpenAISwift {
-    private let urlSession: URLSession
     fileprivate(set) var token: String
     fileprivate let config: Config
     
@@ -52,7 +51,7 @@ public class OpenAISwift {
     
     public init(authToken: String, config: Config = Config()) {
         self.token = authToken
-        self.config = Config()
+        self.config = config
     }
 }
 
@@ -119,22 +118,7 @@ extension OpenAISwift {
                                     presencePenalty: presencePenalty,
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias)
-
-        let request = prepareRequest(endpoint, body: body)
-        
-        makeRequest(request: request) { result in
-            switch result {
-                case .success(let success):
-                    do {
-                        let res = try JSONDecoder().decode(OpenAI<MessageResult>.self, from: success)
-                        completionHandler(.success(res))
-                    } catch {
-                        completionHandler(.failure(.decodingError(error: error)))
-                    }
-                case .failure(let failure):
-                    completionHandler(.failure(.genericError(error: failure)))
-            }
-        }
+        makeRequest(endpoint: endpoint, body: body, completionHandler: completionHandler)
     }
 
     /// Send a Image generation request to the OpenAI API
@@ -147,30 +131,28 @@ extension OpenAISwift {
     public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         let endpoint = Endpoint.images
         let body = ImageGeneration(prompt: prompt, n: numImages, size: size, user: user)
-        let request = prepareRequest(endpoint, body: body)
-
-        makeRequest(request: request) { result in
-            switch result {
-                case .success(let success):
-                    do {
-                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
-                        completionHandler(.success(res))
-                    } catch {
-                        completionHandler(.failure(.decodingError(error: error)))
-                    }
-                case .failure(let failure):
-                    completionHandler(.failure(.genericError(error: failure)))
-                }
-        }
+        makeRequest(endpoint: endpoint, body: body, completionHandler: completionHandler)
     }
     
-    private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
-        let session = config.session
-        let task = session.dataTask(with: request) { (data, response, error) in
+    private func makeRequest<BodyType: Encodable, T: Payload>(endpoint: Endpoint, body: BodyType, completionHandler: @escaping (Result<OpenAI<T>, OpenAIError>) -> Void) {
+        guard let request = prepareRequest(endpoint, body: body) else {
+            completionHandler(.failure(.decodingError(error: RequestError())))
+            return
+        }
+        let task = config.session.dataTask(with: request) { (data, response, error) in
             if let error = error {
-                completionHandler(.failure(error))
+                completionHandler(.failure(.genericError(error: error)))
             } else if let data = data {
-                completionHandler(.success(data))
+                do {
+                    let res = try JSONDecoder().decode(OpenAI<T>.self, from: data)
+                    completionHandler(.success(res))
+                } catch {
+                    if let errorRes = try? JSONDecoder().decode(ResponseError.self, from: data) {
+                        completionHandler(.failure(.internalError(error: errorRes.error)))
+                    } else {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                }
             }
         }
         task.resume()
