@@ -9,33 +9,34 @@ enum Endpoint {
     case edits
     case chat
     case images
-}
-
-extension Endpoint {
+    case moderations
+    
     var path: String {
         switch self {
-            case .completions:
-                return "/v1/completions"
-            case .edits:
-                return "/v1/edits"
-            case .chat:
-                return "/v1/chat/completions"
-            case .images:
-                return "/v1/images/generations"
+        case .completions:
+            return "/v1/completions"
+        case .edits:
+            return "/v1/edits"
+        case .chat:
+            return "/v1/chat/completions"
+        case .images:
+            return "/v1/images/generations"
+        case .moderations:
+            return "/v1/moderations"
         }
     }
     
     var method: String {
         switch self {
-            case .completions, .edits, .chat, .images:
+        case .completions, .edits, .chat, .images, .moderations:
             return "POST"
         }
     }
     
     func baseURL() -> String {
         switch self {
-            case .completions, .edits, .chat, .images:
-            return "https://api.openai.com"
+        case .completions, .edits, .chat, .images, .moderations:
+        return "https://api.openai.com"
         }
     }
 }
