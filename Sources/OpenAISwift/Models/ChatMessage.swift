@@ -17,6 +17,14 @@ public enum ChatRole: String, Codable {
     case assistant
 }
 
+/// A structure that represents a single chat message delta in a chat conversation.
+public struct ChatMessageDelta: Codable {
+    /// The role of the sender of the message.
+    public let role: ChatRole?
+    /// The content of the message.
+    public let content: String?
+}
+
 /// A structure that represents a single message in a chat conversation.
 public struct ChatMessage: Codable {
     /// The role of the sender of the message.
@@ -68,6 +76,10 @@ public struct ChatConversation: Encodable {
 
     /// Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID in the OpenAI Tokenizer—not English words) to an associated bias value from -100 to 100. Values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
     let logitBias: [Int: Double]?
+    
+    /// If you're generating long completions, waiting for the response can take many seconds. To get responses sooner, you can 'stream' the completion as it's being generated. This allows you to start printing or processing the beginning of the completion before the full completion is finished.
+    /// https://github.com/openai/openai-cookbook/blob/main/examples/How_to_stream_completions.ipynb
+    let stream: Bool?
 
     enum CodingKeys: String, CodingKey {
         case user
@@ -81,5 +93,6 @@ public struct ChatConversation: Encodable {
         case presencePenalty = "presence_penalty"
         case frequencyPenalty = "frequency_penalty"
         case logitBias = "logit_bias"
+        case stream
     }
 }
