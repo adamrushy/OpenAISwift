@@ -83,3 +83,11 @@ public struct ChatConversation: Encodable {
         case logitBias = "logit_bias"
     }
 }
+
+public struct ChatError: Codable {
+    public struct Payload: Codable {
+        public let message, type, param, code: String
+    }
+    
+    public let error: Payload
+}

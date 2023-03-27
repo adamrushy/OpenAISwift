@@ -7,6 +7,7 @@ import FoundationXML
 public enum OpenAIError: Error {
     case genericError(error: Error)
     case decodingError(error: Error)
+    case chatError(error: ChatError.Payload)
 }
 
 public class OpenAISwift {
@@ -131,9 +132,19 @@ extension OpenAISwift {
                     do {
                         let res = try JSONDecoder().decode(OpenAI<MessageResult>.self, from: success)
                         completionHandler(.success(res))
+                        return
+                    } catch {
+                        // Do nothing, we want to try decoding the ChatError before throwing in the towel.
+                    }
+                    
+                    do {
+                        let chatErr = try JSONDecoder().decode(ChatError.self, from: success) as ChatError
+                        completionHandler(.failure(.chatError(error: chatErr.error)))
+                        
                     } catch {
                         completionHandler(.failure(.decodingError(error: error)))
                     }
+                    
                 case .failure(let failure):
                     completionHandler(.failure(.genericError(error: failure)))
             }
@@ -274,7 +285,10 @@ extension OpenAISwift {
                      presencePenalty: presencePenalty,
                      frequencyPenalty: frequencyPenalty,
                      logitBias: logitBias) { result in
-                continuation.resume(with: result)
+                switch result {
+                    case .success: continuation.resume(with: result)
+                    case .failure(let failure): continuation.resume(throwing: failure)
+                }
             }
         }
     }
