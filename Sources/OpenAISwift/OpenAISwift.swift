@@ -12,9 +12,23 @@ public enum OpenAIError: Error {
 
 public class OpenAISwift {
     fileprivate(set) var token: String?
+    fileprivate let config: Config
     
-    public init(authToken: String) {
+    /// Configuration object for the client
+    public struct Config {
+        
+        /// Initialiser
+        /// - Parameter session: the session to use for network requests.
+        public init(session: URLSession = URLSession.shared) {
+            self.session = session
+        }
+
+        let session:URLSession
+    }
+    
+    public init(authToken: String, config: Config = Config()) {
         self.token = authToken
+        self.config = Config()
     }
 }
 
@@ -83,6 +97,7 @@ extension OpenAISwift {
     ///   - maxTokens: The maximum number of tokens allowed for the generated answer. By default, the number of tokens the model can return will be (4096 - prompt tokens).
     ///   - presencePenalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.
     ///   - frequencyPenalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.
+    ///   - logitBias: Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID in the OpenAI Tokenizer—not English words) to an associated bias value from -100 to 100. Values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
     ///   - completionHandler: Returns an OpenAI Data Model
     public func sendChat(with messages: [ChatMessage],
                          model: OpenAIModelType = .chat(.chatgpt),
@@ -94,6 +109,7 @@ extension OpenAISwift {
                          maxTokens: Int? = nil,
                          presencePenalty: Double? = 0,
                          frequencyPenalty: Double? = 0,
+                         logitBias: [Int: Double]? = nil,
                          completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
         let endpoint = Endpoint.chat
         let body = ChatConversation(user: user,
@@ -105,7 +121,8 @@ extension OpenAISwift {
                                     stop: stop,
                                     maxTokens: maxTokens,
                                     presencePenalty: presencePenalty,
-                                    frequencyPenalty: frequencyPenalty)
+                                    frequencyPenalty: frequencyPenalty,
+                                    logitBias: logitBias)
 
         let request = prepareRequest(endpoint, body: body)
         
@@ -133,9 +150,36 @@ extension OpenAISwift {
             }
         }
     }
+
+    /// Send a Image generation request to the OpenAI API
+    /// - Parameters:
+    ///   - prompt: The Text Prompt
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+        let endpoint = Endpoint.images
+        let body = ImageGeneration(prompt: prompt, n: numImages, size: size, user: user)
+        let request = prepareRequest(endpoint, body: body)
+
+        makeRequest(request: request) { result in
+            switch result {
+                case .success(let success):
+                    do {
+                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        completionHandler(.success(res))
+                    } catch {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                case .failure(let failure):
+                    completionHandler(.failure(.genericError(error: failure)))
+                }
+        }
+    }
     
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
-        let session = URLSession.shared
+        let session = config.session
         let task = session.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 completionHandler(.failure(error))
@@ -214,6 +258,7 @@ extension OpenAISwift {
     ///   - maxTokens: The maximum number of tokens allowed for the generated answer. By default, the number of tokens the model can return will be (4096 - prompt tokens).
     ///   - presencePenalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.
     ///   - frequencyPenalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.
+    ///   - logitBias: Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID in the OpenAI Tokenizer—not English words) to an associated bias value from -100 to 100. Values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
     ///   - completionHandler: Returns an OpenAI Data Model
     @available(swift 5.5)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
@@ -226,7 +271,8 @@ extension OpenAISwift {
                          stop: [String]? = nil,
                          maxTokens: Int? = nil,
                          presencePenalty: Double? = 0,
-                         frequencyPenalty: Double? = 0) async throws -> OpenAI<MessageResult> {
+                         frequencyPenalty: Double? = 0,
+                         logitBias: [Int: Double]? = nil) async throws -> OpenAI<MessageResult> {
         return try await withCheckedThrowingContinuation { continuation in
             sendChat(with: messages,
                      model: model,
@@ -237,11 +283,29 @@ extension OpenAISwift {
                      stop: stop,
                      maxTokens: maxTokens,
                      presencePenalty: presencePenalty,
-                     frequencyPenalty: frequencyPenalty) { result in
+                     frequencyPenalty: frequencyPenalty,
+                     logitBias: logitBias) { result in
                 switch result {
                     case .success: continuation.resume(with: result)
                     case .failure(let failure): continuation.resume(throwing: failure)
                 }
+            }
+        }
+    }
+
+    /// Send a Image generation request to the OpenAI API
+    /// - Parameters:
+    ///   - prompt: The Text Prompt
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    /// - Returns: Returns an OpenAI Data Model
+    @available(swift 5.5)
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil) async throws -> OpenAI<UrlResult> {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendImages(with: prompt, numImages: numImages, size: size, user: user) { result in
+                continuation.resume(with: result)
             }
         }
     }
