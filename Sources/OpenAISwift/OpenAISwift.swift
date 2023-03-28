@@ -128,25 +128,21 @@ extension OpenAISwift {
         
         makeRequest(request: request) { result in
             switch result {
-                case .success(let success):
-                    do {
-                        let res = try JSONDecoder().decode(OpenAI<MessageResult>.self, from: success)
-                        completionHandler(.success(res))
-                        return
-                    } catch {
-                        // Do nothing, we want to try decoding the ChatError before throwing in the towel.
-                    }
-                    
-                    do {
-                        let chatErr = try JSONDecoder().decode(ChatError.self, from: success) as ChatError
-                        completionHandler(.failure(.chatError(error: chatErr.error)))
-                        
-                    } catch {
-                        completionHandler(.failure(.decodingError(error: error)))
-                    }
-                    
-                case .failure(let failure):
-                    completionHandler(.failure(.genericError(error: failure)))
+            case .success(let success):
+                if let chatErr = try? JSONDecoder().decode(ChatError.self, from: success) as ChatError {
+                    completionHandler(.failure(.chatError(error: chatErr.error)))
+                    return
+                }
+                
+                do {
+                    let res = try JSONDecoder().decode(OpenAI<MessageResult>.self, from: success)
+                    completionHandler(.success(res))
+                } catch {
+                    completionHandler(.failure(.decodingError(error: error)))
+                }
+                
+            case .failure(let failure):
+                completionHandler(.failure(.genericError(error: failure)))
             }
         }
     }

@@ -86,7 +86,8 @@ public struct ChatConversation: Encodable {
 
 public struct ChatError: Codable {
     public struct Payload: Codable {
-        public let message, type, param, code: String
+        public let message, type: String
+        public let param, code: String?
     }
     
     public let error: Payload
