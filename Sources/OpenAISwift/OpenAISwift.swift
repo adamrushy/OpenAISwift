@@ -136,7 +136,7 @@ extension OpenAISwift {
     
     private func makeRequest<BodyType: Encodable, T: Payload>(endpoint: Endpoint, body: BodyType, completionHandler: @escaping (Result<OpenAI<T>, OpenAIError>) -> Void) {
         guard let request = prepareRequest(endpoint, body: body) else {
-            completionHandler(.failure(.decodingError(error: RequestError())))
+            completionHandler(.failure(.genericError(error: RequestError())))
             return
         }
         let task = config.session.dataTask(with: request) { (data, response, error) in
@@ -145,13 +145,13 @@ extension OpenAISwift {
             } else if let data = data {
                 do {
                     let res = try JSONDecoder().decode(OpenAI<T>.self, from: data)
-                    completionHandler(.success(res))
-                } catch {
-                    if let errorRes = try? JSONDecoder().decode(ResponseError.self, from: data) {
-                        completionHandler(.failure(.internalError(error: errorRes.error)))
+                    if !res.isValid, let error = try? JSONDecoder().decode(ResponseError.self, from: data).error {
+                        completionHandler(.failure(.internalError(error: error)))
                     } else {
-                        completionHandler(.failure(.decodingError(error: error)))
+                        completionHandler(.success(res))
                     }
+                } catch {
+                    completionHandler(.failure(.genericError(error: error)))
                 }
             }
         }

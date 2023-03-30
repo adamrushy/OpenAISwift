@@ -55,25 +55,21 @@ final class OpenAISwiftTests: XCTestCase {
         }
     }
     
-    func testDecodingError() async throws {
-        do {
-            let responseData = try XCTUnwrap("{}".data(using: .utf8))
-            let expectedUrl = try XCTUnwrap(URL(string: "https://api.openai.com/v1/completions"))
-            let expectedToken = try XCTUnwrap(validAuthToken)
-            MockURLProtocol.handlers.add(match: { $0.url == expectedUrl },
-                                         inspect: {
-                XCTAssertEqual($0.allHTTPHeaderFields?["Content-Type"], "application/json")
-                XCTAssertEqual($0.allHTTPHeaderFields?["Authorization"], "Bearer \(expectedToken)")
-            },
-                                         result: .success(.init(statusCode: 500, data: responseData)))
-            let sut = OpenAISwift(authToken: validAuthToken, config: .init(session: mockUrlSession))
-            
-            _ = try await sut.sendCompletion(with: "Write a haiku")
-            
-            XCTFail("sendCompletion must fail")
-        } catch OpenAIError.decodingError {
-            XCTAssertTrue(true)
-        }
+    func testInvalidResponse() async throws {
+        let responseData = try XCTUnwrap("{}".data(using: .utf8))
+        let expectedUrl = try XCTUnwrap(URL(string: "https://api.openai.com/v1/completions"))
+        let expectedToken = try XCTUnwrap(validAuthToken)
+        MockURLProtocol.handlers.add(match: { $0.url == expectedUrl },
+                                     inspect: {
+            XCTAssertEqual($0.allHTTPHeaderFields?["Content-Type"], "application/json")
+            XCTAssertEqual($0.allHTTPHeaderFields?["Authorization"], "Bearer \(expectedToken)")
+        },
+                                     result: .success(.init(statusCode: 500, data: responseData)))
+        let sut = OpenAISwift(authToken: validAuthToken, config: .init(session: mockUrlSession))
+        
+        let response = try await sut.sendCompletion(with: "Write a haiku")
+        
+        XCTAssertEqual(response, .init(object: nil, model: nil, choices: nil, usage: nil, data: nil))
     }
     
     func testSuccess() async throws {
