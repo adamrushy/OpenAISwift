@@ -18,7 +18,7 @@ https://beta.openai.com/docs
 
 You can use Swift Package Manager to integrate the library by adding the following dependency in the `Package.swift` file or by adding it directly within Xcode.
 
-`.Package(url: "https://github.com/adamrushy/OpenAISwift.git", majorVersion: 1)`
+`.package(url: "https://github.com/adamrushy/OpenAISwift.git", from: "1.2.0")`
 
 ### Manual
 
