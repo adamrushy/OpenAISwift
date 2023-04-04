@@ -164,6 +164,21 @@ do {
 }
 ```
 
+### [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)
+
+Get a vector representation of a given input that can be easily consumed by machine learning models and algorithms.(see OpenAI reference for more info).
+
+```swift
+do {
+    let result = try await openAI.sendEmbeddings(
+        with: "The food was delicious and the waiter..."
+    )
+    // use result
+} catch {
+    // ...
+}
+```
+
 ## Contribute ❤️
 
 I created this mainly for fun, we can add more endpoints and explore the library even further. Feel free to raise a PR to help grow the library.

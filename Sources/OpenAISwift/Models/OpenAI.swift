@@ -24,7 +24,7 @@ public struct MessageResult: Payload {
 
 public struct UsageResult: Codable {
     public let promptTokens: Int
-    public let completionTokens: Int
+    public let completionTokens: Int?
     public let totalTokens: Int
 
     enum CodingKeys: String, CodingKey {
@@ -36,4 +36,8 @@ public struct UsageResult: Codable {
 
 public struct UrlResult: Payload {
     public let url: String
+}
+
+public struct EmbeddingResult: Payload {
+    public let embedding: [Double]
 }

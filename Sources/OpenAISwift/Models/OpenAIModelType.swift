@@ -21,6 +21,9 @@ public enum OpenAIModelType {
     /// ``Chat`` Family of Models
     case chat(Chat)
     
+    /// ``Embedding`` Family of Models
+    case embedding(Embedding)
+    
     /// Other Custom Models
     case other(String)
     
@@ -30,6 +33,7 @@ public enum OpenAIModelType {
         case .codex(let model): return model.rawValue
         case .feature(let model): return model.rawValue
         case .chat(let model): return model.rawValue
+        case .embedding(let model): return model.rawValue
         case .other(let modelName): return modelName
         }
     }
@@ -100,5 +104,15 @@ public enum OpenAIModelType {
         /// Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.
         /// > Model Name: gpt-3.5-turbo-0301
         case chatgpt0301 = "gpt-3.5-turbo-0301"
+    }
+    
+    /// A set of models for the embedding
+    /// You can read the [API Docs](https://platform.openai.com/docs/api-reference/embeddings)
+    public enum Embedding: String {
+        
+        /// The new model, text-embedding-ada-002, replaces five separate models for text search, text similarity, and code search, and outperforms previous most capable model, Davinci, at most tasks, while being priced 99.8% lower.
+        ///
+        /// > Model Name: text-embedding-ada-002
+        case ada = "text-embedding-ada-002"
     }
 }

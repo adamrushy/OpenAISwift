@@ -146,6 +146,35 @@ extension OpenAISwift {
             }
         }
     }
+    
+    /// Send a Embeddings request to the OpenAI API
+    /// - Parameters:
+    ///   - input: The Input For Example "The food was delicious and the waiter..."
+    ///   - model: The Model to use, the only support model is `text-embedding-ada-002`
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendEmbeddings(with input: String,
+                               model: OpenAIModelType = .embedding(.ada),
+                               completionHandler: @escaping (Result<OpenAI<EmbeddingResult>, OpenAIError>) -> Void) {
+        let endpoint = Endpoint.embeddings
+        let body = EmbeddingsInput(input: input,
+                                   model: model.modelName)
+
+        let request = prepareRequest(endpoint, body: body)
+        makeRequest(request: request) { result in
+            switch result {
+                case .success(let success):
+                    do {
+                        let res = try JSONDecoder().decode(OpenAI<EmbeddingResult>.self, from: success)
+                        completionHandler(.success(res))
+                    } catch {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                case .failure(let failure):
+                    completionHandler(.failure(.genericError(error: failure)))
+            }
+        }
+    }
+
 
     /// Send a Image generation request to the OpenAI API
     /// - Parameters:
@@ -289,6 +318,22 @@ extension OpenAISwift {
         }
     }
 
+    /// Send a Embeddings request to the OpenAI API
+    /// - Parameters:
+    ///   - input: The Input For Example "The food was delicious and the waiter..."
+    ///   - model: The Model to use, the only support model is `text-embedding-ada-002`
+    ///   - completionHandler: Returns an OpenAI Data Model
+    @available(swift 5.5)
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func sendEmbeddings(with input: String,
+                               model: OpenAIModelType = .embedding(.ada)) async throws -> OpenAI<EmbeddingResult> {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendEmbeddings(with: input) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     /// Send a Image generation request to the OpenAI API
     /// - Parameters:
     ///   - prompt: The Text Prompt
