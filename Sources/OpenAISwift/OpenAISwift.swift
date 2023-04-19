@@ -12,6 +12,7 @@ public enum OpenAIError: Error {
 
 public class OpenAISwift {
     fileprivate(set) var token: String?
+    fileprivate(set) var baseURL: String?
     fileprivate let config: Config
     
     /// Configuration object for the client
@@ -26,8 +27,9 @@ public class OpenAISwift {
         let session:URLSession
     }
     
-    public init(authToken: String, config: Config = Config()) {
+    public init(authToken: String, baseURL: String? = nil, config: Config = Config()) {
         self.token = authToken
+        self.baseURL = baseURL
         self.config = Config()
     }
 }
@@ -217,7 +219,8 @@ extension OpenAISwift {
     }
     
     private func prepareRequest<BodyType: Encodable>(_ endpoint: Endpoint, body: BodyType) -> URLRequest {
-        var urlComponents = URLComponents(url: URL(string: endpoint.baseURL())!, resolvingAgainstBaseURL: true)
+        
+        var urlComponents = URLComponents(url: prepareBaseURL(endpoint), resolvingAgainstBaseURL: true)
         urlComponents?.path = endpoint.path
         var request = URLRequest(url: urlComponents!.url!)
         request.httpMethod = endpoint.method
@@ -234,6 +237,28 @@ extension OpenAISwift {
         }
         
         return request
+    }
+    
+    private func prepareBaseURL(_ endpoint: Endpoint) -> URL{
+        
+        if var baseURL = baseURL, !baseURL.isEmpty {
+            // needs https:// for request
+            if baseURL.lowercased().hasPrefix("http://") {
+                // change http to https
+                baseURL = baseURL.replacingOccurrences(of: "http://", with: "https://", options: .caseInsensitive)
+            }
+            if !baseURL.lowercased().hasPrefix("https://") {
+                // add https:// prefix
+                baseURL = "https://" + baseURL
+            }
+            while baseURL.hasSuffix("/") {
+                baseURL.removeLast()
+            }
+            return URL(string: baseURL)!
+        }
+        
+        return URL(string: endpoint.baseURL())!
+        
     }
 }
 
