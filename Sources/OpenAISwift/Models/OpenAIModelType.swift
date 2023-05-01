@@ -15,14 +15,26 @@ public enum OpenAIModelType {
     /// ``Codex`` Family of Models
     case codex(Codex)
     
-    /// ``Feature``Family of Models
+    /// ``Feature`` Family of Models
     case feature(Feature)
+    
+    /// ``Chat`` Family of Models
+    case chat(Chat)
+    
+    /// ``Embedding`` Family of Models
+    case embedding(Embedding)
+    
+    /// Other Custom Models
+    case other(String)
     
     public var modelName: String {
         switch self {
         case .gpt3(let model): return model.rawValue
         case .codex(let model): return model.rawValue
         case .feature(let model): return model.rawValue
+        case .chat(let model): return model.rawValue
+        case .embedding(let model): return model.rawValue
+        case .other(let modelName): return modelName
         }
     }
     
@@ -79,5 +91,28 @@ public enum OpenAIModelType {
         
         /// > Model Name: text-davinci-edit-001
         case davinci = "text-davinci-edit-001"
+    }
+    
+    /// A set of models for the new chat completions
+    ///  You can read the [API Docs](https://platform.openai.com/docs/api-reference/chat/create)
+    public enum Chat: String {
+        
+        /// Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration.
+        /// > Model Name: gpt-3.5-turbo
+        case chatgpt = "gpt-3.5-turbo"
+        
+        /// Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.
+        /// > Model Name: gpt-3.5-turbo-0301
+        case chatgpt0301 = "gpt-3.5-turbo-0301"
+    }
+    
+    /// A set of models for the embedding
+    /// You can read the [API Docs](https://platform.openai.com/docs/api-reference/embeddings)
+    public enum Embedding: String {
+        
+        /// The new model, text-embedding-ada-002, replaces five separate models for text search, text similarity, and code search, and outperforms previous most capable model, Davinci, at most tasks, while being priced 99.8% lower.
+        ///
+        /// > Model Name: text-embedding-ada-002
+        case ada = "text-embedding-ada-002"
     }
 }
