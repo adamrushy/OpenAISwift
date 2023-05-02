@@ -20,6 +20,10 @@ public struct OpenAIEndpointProvider {
     
     public let source: Source
     
+    public init(source: OpenAIEndpointProvider.Source) {
+        self.source = source
+    }
+    
     func getPath(api: API) -> String {
         switch source {
         case .openAI:
