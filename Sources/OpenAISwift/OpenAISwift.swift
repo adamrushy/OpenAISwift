@@ -28,7 +28,7 @@ public class OpenAISwift {
     
     public init(authToken: String, config: Config = Config()) {
         self.token = authToken
-        self.config = Config()
+        self.config = config
     }
 }
 
