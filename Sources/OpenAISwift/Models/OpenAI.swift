@@ -12,6 +12,7 @@ public struct OpenAI<T: Payload>: Codable {
     public let choices: [T]?
     public let usage: UsageResult?
     public let data: [T]?
+    public let results: [T]?
 }
 
 public struct TextResult: Payload {
@@ -40,4 +41,8 @@ public struct UrlResult: Payload {
 
 public struct EmbeddingResult: Payload {
     public let embedding: [Double]
+}
+
+public struct ModerationResult: Payload {
+    public let flagged: Bool?
 }

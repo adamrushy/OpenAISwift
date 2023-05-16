@@ -24,6 +24,9 @@ public enum OpenAIModelType {
     /// ``Embedding`` Family of Models
     case embedding(Embedding)
     
+    /// ``Moderation`` Family of Models
+    case moderation(Moderation)
+    
     /// Other Custom Models
     case other(String)
     
@@ -34,6 +37,7 @@ public enum OpenAIModelType {
         case .feature(let model): return model.rawValue
         case .chat(let model): return model.rawValue
         case .embedding(let model): return model.rawValue
+        case .moderation(let model): return model.rawValue
         case .other(let modelName): return modelName
         }
     }
@@ -114,5 +118,16 @@ public enum OpenAIModelType {
         ///
         /// > Model Name: text-embedding-ada-002
         case ada = "text-embedding-ada-002"
+    }
+    
+    /// A set of models for the moderations endpoint
+    /// You can read the [API Docs](https://platform.openai.com/docs/api-reference/moderations)
+    public enum Moderation: String {
+        /// Default. Automatically upgraded over time.
+        case latest = "text-moderation-latest"
+        
+        /// OpenAI will provide advanced notice before updating this model.
+        /// Accuracy  may be slightly lower than for text-moderation-latest.
+        case stable = "text-moderation-stable"
     }
 }
