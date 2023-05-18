@@ -85,6 +85,31 @@ extension OpenAISwift {
         }
     }
     
+    /// Send a Moderation request to the OpenAI API
+    /// - Parameters:
+    ///   - input: The Input For Example "My nam is Adam"
+    ///   - model: The Model to use
+    ///   - completionHandler: Returns an OpenAI Data Model
+    public func sendModerations(with input: String, model: OpenAIModelType = .moderation(.latest), completionHandler: @escaping (Result<OpenAI<ModerationResult>, OpenAIError>) -> Void) {
+        let endpoint = Endpoint.moderations
+        let body = Moderation(input: input, model: model.modelName)
+        let request = prepareRequest(endpoint, body: body)
+        
+        makeRequest(request: request) { result in
+            switch result {
+            case .success(let success):
+                do {
+                    let res = try JSONDecoder().decode(OpenAI<ModerationResult>.self, from: success)
+                    completionHandler(.success(res))
+                } catch {
+                    completionHandler(.failure(.decodingError(error: error)))
+                }
+            case .failure(let failure):
+                completionHandler(.failure(.genericError(error: failure)))
+            }
+        }
+    }
+    
     /// Send a Chat request to the OpenAI API
     /// - Parameters:
     ///   - messages: Array of `ChatMessages`
@@ -329,6 +354,21 @@ extension OpenAISwift {
                                model: OpenAIModelType = .embedding(.ada)) async throws -> OpenAI<EmbeddingResult> {
         return try await withCheckedThrowingContinuation { continuation in
             sendEmbeddings(with: input) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
+    /// Send a Moderation request to the OpenAI API
+    /// - Parameters:
+    ///   - input: The Input For Example "My nam is Adam"
+    ///   - model: The Model to use
+    /// - Returns: Returns an OpenAI Data Model
+    @available(swift 5.5)
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func sendModerations(with input: String = "", model: OpenAIModelType = .moderation(.latest)) async throws -> OpenAI<ModerationResult> {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendModerations(with: input, model: model) { result in
                 continuation.resume(with: result)
             }
         }
