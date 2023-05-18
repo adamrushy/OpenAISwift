@@ -21,6 +21,9 @@ public enum OpenAIModelType {
     /// ``Chat`` Family of Models
     case chat(Chat)
     
+    /// ``GPT4`` Family of Models
+    case gpt4(GPT4)
+    
     /// ``Embedding`` Family of Models
     case embedding(Embedding)
     
@@ -29,6 +32,7 @@ public enum OpenAIModelType {
     
     public var modelName: String {
         switch self {
+        case .gpt4(let model): return model.rawValue
         case .gpt3(let model): return model.rawValue
         case .codex(let model): return model.rawValue
         case .feature(let model): return model.rawValue
@@ -105,6 +109,29 @@ public enum OpenAIModelType {
         /// > Model Name: gpt-3.5-turbo-0301
         case chatgpt0301 = "gpt-3.5-turbo-0301"
     }
+    
+    /// A set of models for the new GPT4 completions
+    ///  Please note that you need to request access first - waitlist: https://openai.com/waitlist/gpt-4-api
+    ///  You can read the [API Docs](https://platform.openai.com/docs/api-reference/chat/create)
+    public enum GPT4: String {
+        
+        /// More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.
+        /// > Model Name: gpt-4
+        case gpt4 = "gpt-4"
+        
+        /// Snapshot of gpt-4 from March 14th 2023. Unlike gpt-4, this model will not receive updates, and will be deprecated 3 months after a new version is released.
+        /// > Model Name: gpt-4-0314
+        case gpt4_0314 = "gpt-4-0314"
+        
+        /// Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.
+        /// > Model Name: gpt-4-32k
+        case gpt4_32k = "gpt-4-32k"
+        
+        /// Snapshot of gpt-4-32 from March 14th 2023. Unlike gpt-4-32k, this model will not receive updates, and will be deprecated 3 months after a new version is released.
+        /// > Model Name: gpt-4-32k
+        case gpt4_32k_0314 = "gpt-4-32k-0314"
+    }
+    
     
     /// A set of models for the embedding
     /// You can read the [API Docs](https://platform.openai.com/docs/api-reference/embeddings)
