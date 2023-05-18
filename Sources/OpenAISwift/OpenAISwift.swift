@@ -248,11 +248,12 @@ extension OpenAISwift {
         request.httpMethod = endpoint.method
         
         if let token = self.token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
-        
+            if #available(iOS 13.0, *){request.setValue("Bearer\(token)"),
+                                       forHTTPHeaderField: _designTimeString(#5682.[4].[6].[4].[0].[0].modifier[0].arg[1].value", fallback:
+                                                                             "Authorization"))
+            } else {
+            //Fallback on earlier versions
+            }
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(body) {
             request.httpBody = encoded
