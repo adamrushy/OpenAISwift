@@ -44,11 +44,14 @@ extension ServerSentEventsHandler: URLSessionDataDelegate {
         if let eventString = String(data: data, encoding: .utf8) {
             let lines = eventString.split(separator: "\n")
             for line in lines {
-                if line.hasPrefix("data:") && line != "data: [DONE]" {
-                    if let eventData = String(line.dropFirst(5)).data(using: .utf8) {
+                if line.hasPrefix("data:") {
+                    if line == "data: [DONE]" {
+                        onComplete?()
+                    } else if let eventData = String(line.dropFirst(5)).data(using: .utf8) {
                         processEvent(eventData)
                     } else {
-                        disconnect()
+                        // received something unexpected
+                        print(line)
                     }
                 }
             }
