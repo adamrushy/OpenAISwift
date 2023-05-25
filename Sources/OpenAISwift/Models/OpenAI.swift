@@ -23,6 +23,10 @@ public struct MessageResult: Payload {
     public let message: ChatMessage
 }
 
+public struct StreamMessageResult: Payload {
+    public let delta: ChatMessage
+}
+
 public struct UsageResult: Codable {
     public let promptTokens: Int
     public let completionTokens: Int?
