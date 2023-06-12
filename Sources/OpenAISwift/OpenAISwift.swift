@@ -103,7 +103,7 @@ extension OpenAISwift {
     ///   - model: The Model to use
     ///   - completionHandler: Returns an OpenAI Data Model
     public func sendModerations(with input: String, model: OpenAIModelType = .moderation(.latest), completionHandler: @escaping (Result<OpenAI<ModerationResult>, OpenAIError>) -> Void) {
-        let endpoint = Endpoint.moderations
+        let endpoint = OpenAIEndpointProvider.API.moderations
         let body = Moderation(input: input, model: model.modelName)
         let request = prepareRequest(endpoint, body: body)
         
