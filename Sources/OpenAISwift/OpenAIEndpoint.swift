@@ -11,6 +11,7 @@ public struct OpenAIEndpointProvider {
         case chat
         case images
         case embeddings
+        case moderations
     }
     
     public enum Source {
@@ -38,6 +39,8 @@ public struct OpenAIEndpointProvider {
                     return "/v1/images/generations"
                 case .embeddings:
                     return "/v1/embeddings"
+                case .moderations:
+                    return "/v1/moderations"
             }
         case let .proxy(path: pathClosure, method: _):
             return pathClosure(api)
@@ -48,7 +51,7 @@ public struct OpenAIEndpointProvider {
         switch source {
         case .openAI:
             switch api {
-            case .completions, .edits, .chat, .images, .embeddings:
+            case .completions, .edits, .chat, .images, .embeddings, .moderations:
                 return "POST"
             }
         case let .proxy(path: _, method: methodClosure):
