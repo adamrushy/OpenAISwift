@@ -30,12 +30,12 @@ public class OpenAISwift {
         let session:URLSession
         let authorizeRequest: (inout URLRequest) -> Void
         
-        public static func makeDefultOpenAI(api_key: String) -> Self {
+        public static func makeDefaultOpenAI(apiKey: String) -> Self {
             .init(baseURL: "https://api.openai.com",
                   endpointPrivider: OpenAIEndpointProvider(source: .openAI),
                   session: .shared,
                   authorizeRequest: { request in
-                    request.setValue("Bearer \(api_key)", forHTTPHeaderField: "Authorization")
+                    request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
             })
         }
     }
