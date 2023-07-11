@@ -30,12 +30,12 @@ public class OpenAISwift {
         let session:URLSession
         let authorizeRequest: (inout URLRequest) -> Void
         
-        public static func makeDefultOpenAI(api_key: String) -> Self {
+        public static func makeDefaultOpenAI(apiKey: String) -> Self {
             .init(baseURL: "https://api.openai.com",
                   endpointPrivider: OpenAIEndpointProvider(source: .openAI),
                   session: .shared,
                   authorizeRequest: { request in
-                    request.setValue("Bearer \(api_key)", forHTTPHeaderField: "Authorization")
+                    request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
             })
         }
     }
@@ -242,7 +242,7 @@ extension OpenAISwift {
                                   logitBias: [Int: Double]? = nil,
                                   onEventReceived: ((Result<OpenAI<StreamMessageResult>, OpenAIError>) -> Void)? = nil,
                                   onComplete: (() -> Void)? = nil) {
-        let endpoint = Endpoint.chat
+        let endpoint = OpenAIEndpointProvider.API.chat
         let body = ChatConversation(user: user,
                                     messages: messages,
                                     model: model.modelName,
