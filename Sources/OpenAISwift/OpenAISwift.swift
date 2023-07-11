@@ -242,7 +242,7 @@ extension OpenAISwift {
                                   logitBias: [Int: Double]? = nil,
                                   onEventReceived: ((Result<OpenAI<StreamMessageResult>, OpenAIError>) -> Void)? = nil,
                                   onComplete: (() -> Void)? = nil) {
-        let endpoint = Endpoint.chat
+        let endpoint = OpenAIEndpointProvider.API.chat
         let body = ChatConversation(user: user,
                                     messages: messages,
                                     model: model.modelName,
