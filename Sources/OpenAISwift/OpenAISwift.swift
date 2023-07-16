@@ -311,12 +311,6 @@ extension OpenAISwift {
             switch result {
                 case .success(let success):
                     do {
-                        print(request)
-                        if let string = String(data: success, encoding: .utf8) {
-                            print(string)
-                        } else {
-                            print("The data is not a valid UTF-8 string.")
-                        }
                         let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
                         completionHandler(.success(res))
                     } catch {
@@ -344,13 +338,6 @@ extension OpenAISwift {
             switch result {
             case .success(let success):
                 do {
-                    print(request)
-                    if let string = String(data: success, encoding: .utf8) {
-                        print(string)
-                    } else {
-                        print("The data is not a valid UTF-8 string.")
-                    }
-                    
                     let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
                     completionHandler(.success(res))
                 } catch {
