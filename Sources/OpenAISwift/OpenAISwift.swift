@@ -305,7 +305,7 @@ extension OpenAISwift {
     public func sendImageEdit(image: Data, mask: Data?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.imageedits
-        let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: mask, prompt: "", n: numImages, size: size.rawValue)
+        let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: mask, prompt: prompt, n: numImages, size: size.rawValue)
 
         makeRequest(request: request) { result in
             switch result {
