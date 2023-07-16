@@ -305,20 +305,14 @@ extension OpenAISwift {
     public func sendImageEdit(image: Data, mask: Data?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.imageedits
-//        let body = ImageEdit(image: image, mask: mask, prompt: prompt, n: numImages, size: size, user: user)
         let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: mask, prompt: "", n: numImages, size: size.rawValue)
 
         makeRequest(request: request) { result in
             switch result {
                 case .success(let success):
                     do {
-                        print(request)
-                        print(result)
-                        print(success)
-                        let res = try JSONDecoder().decode(DALLEResponse.self, from: success)
-                        print(res)
-//                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
-//                        completionHandler(.success(res))
+                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        completionHandler(.success(res))
                     } catch {
                         completionHandler(.failure(.decodingError(error: error)))
                     }
@@ -339,7 +333,6 @@ extension OpenAISwift {
     
     public func sendImageVariations(image: Data, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.imagevariations
-//        let body = ImageVariations(image: image, n: numImages, size: size, user: user)
         let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: nil, prompt: "", n: numImages, size: size.rawValue)
         makeRequest(request: request) { result in
             switch result {
@@ -352,10 +345,10 @@ extension OpenAISwift {
                         print("The data is not a valid UTF-8 string.")
                     }
                     
-                    let res = try JSONDecoder().decode(DALLEResponse.self, from: success)
-                    print(res)
-//                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
-//                    completionHandler(.success(res))
+//                    let res = try JSONDecoder().decode(DALLEResponse.self, from: success)
+//                    print(res)
+                    let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                    completionHandler(.success(res))
                 } catch {
                     completionHandler(.failure(.decodingError(error: error)))
                 }

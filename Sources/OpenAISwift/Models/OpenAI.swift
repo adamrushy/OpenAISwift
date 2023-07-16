@@ -39,13 +39,13 @@ public struct UsageResult: Codable {
     }
 }
 
-struct DALLEResponse: Decodable {
-    let created: Int
-    let data: [Photo]
+public struct DALLEResponse: Payload {
+    public let created: Int
+    public let data: [Photo]
 }
 
-struct Photo: Decodable {
-    let url: String
+public struct Photo: Codable {
+    public let url: String
 }
 
 public struct UrlResult: Payload {
