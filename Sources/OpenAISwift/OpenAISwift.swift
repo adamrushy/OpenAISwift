@@ -346,8 +346,11 @@ extension OpenAISwift {
             case .success(let success):
                 do {
                     print(request)
-                    print(result)
-                    print(success)
+                    if let string = String(data: success, encoding: .utf8) {
+                        print(string)
+                    } else {
+                        print("The data is not a valid UTF-8 string.")
+                    }
                     
                     let res = try JSONDecoder().decode(DALLEResponse.self, from: success)
                     print(res)
