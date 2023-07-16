@@ -302,7 +302,7 @@ extension OpenAISwift {
     ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
     ///   - completionHandler: Returns an OpenAI Data Model
 
-    public func sendImageEdit(image: Data, mask: Data?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+    public func sendImageEdit(image: String, mask: String?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.images
         let body = ImageEdit(image: image, mask: mask, prompt: prompt, n: numImages, size: size, user: user)
@@ -332,7 +332,7 @@ extension OpenAISwift {
     ///   - completionHandler: Returns an OpenAI Data Model
 
     
-    public func sendImageVariations(image: Data, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+    public func sendImageVariations(image: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.images
         let body = ImageVariations(image: image, n: numImages, size: size, user: user)
         let request = prepareRequest(endpoint, body: body)
