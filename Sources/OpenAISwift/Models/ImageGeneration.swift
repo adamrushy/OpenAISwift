@@ -15,8 +15,8 @@ struct ImageGeneration: Encodable {
 }
 
 struct ImageEdit: Encodable {
-    let image: String
-    let mask: String?
+    let image: Data
+    let mask: Data?
     let prompt: String
     let n: Int
     let size: ImageSize
@@ -24,7 +24,7 @@ struct ImageEdit: Encodable {
 }
 
 struct ImageVariations: Encodable {
-    let image: String
+    let image: Data
     let n: Int
     let size: ImageSize
     let user: String?
