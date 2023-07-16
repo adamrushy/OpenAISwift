@@ -351,7 +351,7 @@ extension OpenAISwift {
                         print("The data is not a valid UTF-8 string.")
                     }
                     
-x                    let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                    let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
                     completionHandler(.success(res))
                 } catch {
                     completionHandler(.failure(.decodingError(error: error)))
