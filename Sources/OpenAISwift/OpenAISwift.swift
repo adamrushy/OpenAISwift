@@ -312,6 +312,9 @@ extension OpenAISwift {
             switch result {
                 case .success(let success):
                     do {
+                        print(request)
+                        print(result)
+                        print(success)
                         let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
                         completionHandler(.success(res))
                     } catch {
@@ -341,6 +344,10 @@ extension OpenAISwift {
             switch result {
                 case .success(let success):
                     do {
+                        print(request)
+                        print(result)
+                        print(success)
+
                         let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
                         completionHandler(.success(res))
                     } catch {
