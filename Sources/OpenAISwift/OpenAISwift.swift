@@ -293,14 +293,16 @@ extension OpenAISwift {
                 }
         }
     }
-    
-    func isPNG(data: Data) -> Bool {
-        let pngSignature: [UInt8] = [137, 80, 78, 71, 13, 10, 26, 10]
-        var dataSignature = [UInt8](repeating: 0, count: 8)
-        data.copyBytes(to: &dataSignature, count: 8)
-        return pngSignature == dataSignature
-    }
-    
+        
+    /// Send a Image Edit request to the OpenAI API
+    /// - Parameters:
+    ///   - image: The Image to be edited. - Must be less than 4MB.
+    ///   - mask: The mask area to be edited - Must be less than 4MB.
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    ///   - completionHandler: Returns an OpenAI Data Model
+
     public func sendImageEdit(image: Data, mask: Data?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.images
@@ -321,6 +323,15 @@ extension OpenAISwift {
                 }
         }
     }
+    
+    /// Send a Image Variation request to the OpenAI API
+    /// - Parameters:
+    ///   - image: The Image to be varied. - Must be less than 4MB.
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    ///   - completionHandler: Returns an OpenAI Data Model
+
     
     public func sendImageVariations(image: Data, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.images
