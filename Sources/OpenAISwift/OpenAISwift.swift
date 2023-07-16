@@ -425,10 +425,13 @@ extension OpenAISwift {
         }
         
         // Add the "prompt" field.
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"prompt\"\r\n\r\n".data(using: .utf8)!)
-        body.append(prompt.data(using: .utf8)!)
-        body.append("\r\n".data(using: .utf8)!)
+        
+        if !prompt.isEmpty {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"prompt\"\r\n\r\n".data(using: .utf8)!)
+            body.append(prompt.data(using: .utf8)!)
+            body.append("\r\n".data(using: .utf8)!)
+        }
         
         // Add the "n" field.
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
