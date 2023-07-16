@@ -5,7 +5,6 @@ import FoundationXML
 #endif
 
 public enum OpenAIError: Error {
-    case imageError(error: Error)
     case genericError(error: Error)
     case decodingError(error: Error)
     case chatError(error: ChatError.Payload)
