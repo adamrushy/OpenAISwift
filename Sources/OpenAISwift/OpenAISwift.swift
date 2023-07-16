@@ -5,6 +5,7 @@ import FoundationXML
 #endif
 
 public enum OpenAIError: Error {
+    case imageError(error: Error)
     case genericError(error: Error)
     case decodingError(error: Error)
     case chatError(error: ChatError.Payload)
@@ -38,6 +39,10 @@ public class OpenAISwift {
                     request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
             })
         }
+    }
+    
+    public init(apiKey: String) {
+        self.config = Config.makeDefaultOpenAI(apiKey: apiKey)
     }
     
     public init(config: Config) {
@@ -289,6 +294,54 @@ extension OpenAISwift {
         }
     }
     
+    func isPNG(data: Data) -> Bool {
+        let pngSignature: [UInt8] = [137, 80, 78, 71, 13, 10, 26, 10]
+        var dataSignature = [UInt8](repeating: 0, count: 8)
+        data.copyBytes(to: &dataSignature, count: 8)
+        return pngSignature == dataSignature
+    }
+    
+    public func sendImageEdit(image: Data, mask: Data?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+        
+        let endpoint = OpenAIEndpointProvider.API.images
+        let body = ImageEdit(image: image, mask: mask, prompt: prompt, n: numImages, size: size, user: user)
+        let request = prepareRequest(endpoint, body: body)
+
+        makeRequest(request: request) { result in
+            switch result {
+                case .success(let success):
+                    do {
+                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        completionHandler(.success(res))
+                    } catch {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                case .failure(let failure):
+                    completionHandler(.failure(.genericError(error: failure)))
+                }
+        }
+    }
+    
+    public func sendImageVariations(image: Data, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+        let endpoint = OpenAIEndpointProvider.API.images
+        let body = ImageVariations(image: image, n: numImages, size: size, user: user)
+        let request = prepareRequest(endpoint, body: body)
+
+        makeRequest(request: request) { result in
+            switch result {
+                case .success(let success):
+                    do {
+                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        completionHandler(.success(res))
+                    } catch {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                case .failure(let failure):
+                    completionHandler(.failure(.genericError(error: failure)))
+                }
+        }
+    }
+
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
         let session = config.session
         let task = session.dataTask(with: request) { (data, response, error) in
