@@ -18,9 +18,7 @@ public enum ChatRole: String, Codable {
 }
 
 /// A structure that represents a single message in a chat conversation.
-public struct ChatMessage: Codable, Identifiable {
-    // uuid to conform to Identifiable protocol
-    public var id = UUID()
+public struct ChatMessage: Codable {
     /// The role of the sender of the message.
     public let role: ChatRole?
     /// The content of the message.
