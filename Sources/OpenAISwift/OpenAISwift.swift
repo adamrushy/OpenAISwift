@@ -40,6 +40,11 @@ public class OpenAISwift {
         }
     }
     
+    @available(*, deprecated, message: "Use init(config:) instead")
+    public convenience init(authToken: String) {
+        self.init(config: .makeDefaultOpenAI(apiKey: authToken))
+    }
+    
     public init(config: Config) {
         self.config = config
     }
