@@ -34,6 +34,24 @@ public struct ChatMessage: Codable, Identifiable {
         self.role = role
         self.content = content
     }
+    
+    // MARK: Codable
+    
+    private enum CodingKeys: String, CodingKey {
+        case role, content
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        role = try container.decode(ChatRole.self, forKey: .role)
+        content = try container.decode(String.self, forKey: .content)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(self.role, forKey: .role)
+        try container.encodeIfPresent(self.content, forKey: .content)
+    }
 }
 
 /// A structure that represents a chat conversation.
