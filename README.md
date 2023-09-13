@@ -40,7 +40,7 @@ Import the framework in your project:
 
 [Create an OpenAI API key](https://platform.openai.com/account/api-keys) and add it to your configuration:
 
-`var openAI: OpenAISwift = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: "TOKEN))`
+`let openAI: OpenAISwift = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: "TOKEN))`
 
 This framework supports Swift concurrency; each example below has both an async/await and completion handler variant.
 
