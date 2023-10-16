@@ -5,6 +5,7 @@ import FoundationXML
 #endif
 
 public enum OpenAIError: Error {
+    case networkError(code: Int)
     case genericError(error: Error)
     case decodingError(error: Error)
     case chatError(error: ChatError.Payload)
@@ -294,11 +295,15 @@ extension OpenAISwift {
         let task = session.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 completionHandler(.failure(error))
+            } else if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
+                completionHandler(.failure(OpenAIError.networkError(code: response.statusCode)))
             } else if let data = data {
                 completionHandler(.success(data))
+            } else {
+                let error = NSError(domain: "OpenAI", code: 6666, userInfo: [NSLocalizedDescriptionKey: "Unknown error"])
+                completionHandler(.failure(OpenAIError.genericError(error: error)))
             }
         }
-        
         task.resume()
     }
     
