@@ -36,6 +36,7 @@ public struct ChatMessage: Codable, Identifiable {
         self.content = content
     }
 
+
     enum CodingKeys: CodingKey {
         case role
         case content
