@@ -40,7 +40,9 @@ Import the framework in your project:
 
 [Create an OpenAI API key](https://platform.openai.com/account/api-keys) and add it to your configuration:
 
-`let openAI: OpenAISwift = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: "TOKEN"))`
+let TOKEN = "sk-...... "
+
+let openAI: OpenAISwift = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: "TOKEN"))
 
 
 To follow [OpenAI requirements](https://platform.openai.com/docs/api-reference/authentication) 
