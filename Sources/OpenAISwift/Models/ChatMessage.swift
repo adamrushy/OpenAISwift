@@ -19,7 +19,8 @@ public enum ChatRole: String, Codable {
 
 /// A structure that represents a single message in a chat conversation.
 public struct ChatMessage: Codable, Identifiable {
-    // uuid to conform to Identifiable protocol
+    /// UUID to conform to the Identifiable protocol
+    /// - Note: This property is not de- and encoded. A DTO or other logic might be required if the `ChatMessage` instance is stored locally.
     public var id = UUID()
     /// The role of the sender of the message.
     public let role: ChatRole?
@@ -35,16 +36,25 @@ public struct ChatMessage: Codable, Identifiable {
         self.content = content
     }
 
-    
-    // MARK: - Custom Encoding
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(role, forKey: .role)
-        try container.encodeIfPresent(content, forKey: .content)
+
+    enum CodingKeys: CodingKey {
+        case role
+        case content
     }
-    
-    private enum CodingKeys: String, CodingKey {
-        case role, content
+
+    public init(from decoder: Decoder) throws {
+        let container: KeyedDecodingContainer<ChatMessage.CodingKeys> = try decoder.container(keyedBy: ChatMessage.CodingKeys.self)
+
+        self.role = try container.decodeIfPresent(ChatRole.self, forKey: ChatMessage.CodingKeys.role)
+        self.content = try container.decodeIfPresent(String.self, forKey: ChatMessage.CodingKeys.content)
+
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container: KeyedEncodingContainer<ChatMessage.CodingKeys> = encoder.container(keyedBy: ChatMessage.CodingKeys.self)
+
+        try container.encodeIfPresent(self.role, forKey: ChatMessage.CodingKeys.role)
+        try container.encodeIfPresent(self.content, forKey: ChatMessage.CodingKeys.content)
     }
 }
 
@@ -82,7 +92,7 @@ public struct ChatConversation: Encodable {
 
     /// Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID in the OpenAI Tokenizer—not English words) to an associated bias value from -100 to 100. Values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
     let logitBias: [Int: Double]?
-    
+
     /// If you're generating long completions, waiting for the response can take many seconds. To get responses sooner, you can 'stream' the completion as it's being generated. This allows you to start printing or processing the beginning of the completion before the full completion is finished.
     /// https://github.com/openai/openai-cookbook/blob/main/examples/How_to_stream_completions.ipynb
     let stream: Bool?
@@ -108,6 +118,6 @@ public struct ChatError: Codable {
         public let message, type: String
         public let param, code: String?
     }
-    
+
     public let error: Payload
 }
