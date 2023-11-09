@@ -36,7 +36,6 @@ public struct ChatMessage: Codable, Identifiable {
         self.content = content
     }
 
-
     enum CodingKeys: CodingKey {
         case id
         case role
@@ -58,6 +57,7 @@ public struct ChatMessage: Codable, Identifiable {
 
         try container.encodeIfPresent(self.role, forKey: ChatMessage.CodingKeys.role)
         try container.encodeIfPresent(self.content, forKey: ChatMessage.CodingKeys.content)
+
     }
 }
 
