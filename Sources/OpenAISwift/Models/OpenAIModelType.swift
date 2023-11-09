@@ -45,7 +45,28 @@ public enum OpenAIModelType {
         case .other(let modelName): return modelName
         }
     }
-    
+
+    /// Custom initializer  that allows to enum to be constructed from a string value.
+    public init(rawValue: String) {
+        if let gtp3 = GPT3(rawValue: rawValue) {
+            self = .gpt3(gtp3)
+        } else if let codex = Codex(rawValue: rawValue) {
+            self = .codex(codex)
+        } else if let feature = Feature(rawValue: rawValue) {
+            self = .feature(feature)
+        } else if let chat = Chat(rawValue: rawValue) {
+            self = .chat(chat)
+        } else if let gpt4 = GPT4(rawValue: rawValue) {
+            self = .gpt4(gpt4)
+        } else if let embedding = Embedding(rawValue: rawValue) {
+            self = .embedding(embedding)
+        } else if let moderation = Moderation(rawValue: rawValue) {
+            self = .moderation(moderation)
+        } else {
+            self = .other(rawValue)
+        }
+    }
+
     /// A set of models that can understand and generate natural language
     ///
     /// [GPT-3 Models OpenAI API Docs](https://beta.openai.com/docs/models/gpt-3)
