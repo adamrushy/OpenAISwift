@@ -63,10 +63,7 @@ public struct ChatMessage: Codable, Identifiable {
     }
 }
 
-extension ChatMessage: Identifiable, Equatable {
-    public var id: UUID {
-        return UUID()
-    }
+extension ChatMessage:  Equatable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
