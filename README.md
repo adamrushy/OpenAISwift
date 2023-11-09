@@ -40,10 +40,39 @@ Import the framework in your project:
 
 [Create an OpenAI API key](https://platform.openai.com/account/api-keys) and add it to your configuration:
 
+let TOKEN = "sk-...... "
+
+let openAI: OpenAISwift = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: "TOKEN"))
+
+
+To follow [OpenAI requirements](https://platform.openai.com/docs/api-reference/authentication) 
+
+>  Remember that your API key is a secret! Do not share it with others or expose it in any client-side code (browsers, apps). Production requests must be routed through your own backend server where your API key can be securely loaded from an environment variable or key management service.
+
+and basic industrial safety you should not call OpenAI API directly. 
+
+```swift
+private lazy var proxyOpenAIBackend: OpenAISwift = .init(
+        config: OpenAISwift.Config(
+            baseURL: "http://localhost",
+            endpointPrivider: OpenAIEndpointProvider(source: .proxy(path: { _ -> String in
+                "/chat/completions"
+            }, method: { _ -> String in
+                "POST"
+            })),
+            session: session,
+            authorizeRequest: { [weak self] request in
+                self?.authorizeRequest(&request)
+            }
+        ))
+
+    private func authorizeRequest(_ request: inout URLRequest) {
+        if let apiKey = try? Encryptor.getApiToken() {
+            request.setValue(apiKey, forHTTPHeaderField: "X-API-KEY")
+        }
+    }
 ```
-let key = "sk-...... "
-var openAI: OpenAISwift = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: key))
-```
+
 
 This framework supports Swift concurrency; each example below has both an async/await and completion handler variant.
 

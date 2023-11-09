@@ -3,6 +3,10 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking) && canImport(FoundationXML)
+import FoundationNetworking
+import FoundationXML
+#endif
 
 public struct OpenAIEndpointProvider {
     public enum API {
@@ -12,6 +16,8 @@ public struct OpenAIEndpointProvider {
         case images
         case embeddings
         case moderations
+        case imageedits
+        case imagevariations
     }
     
     public enum Source {
@@ -41,6 +47,10 @@ public struct OpenAIEndpointProvider {
                     return "/v1/embeddings"
                 case .moderations:
                     return "/v1/moderations"
+                case .imageedits:
+                    return "/v1/images/edits"
+                case .imagevariations:
+                    return "/v1/images/variations"
             }
         case let .proxy(path: pathClosure, method: _):
             return pathClosure(api)
@@ -51,7 +61,7 @@ public struct OpenAIEndpointProvider {
         switch source {
         case .openAI:
             switch api {
-            case .completions, .edits, .chat, .images, .embeddings, .moderations:
+            case .completions, .edits, .chat, .images, .embeddings, .moderations, .imageedits, .imagevariations:
                 return "POST"
             }
         case let .proxy(path: _, method: methodClosure):
