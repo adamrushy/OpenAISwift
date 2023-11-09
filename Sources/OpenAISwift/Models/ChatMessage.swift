@@ -18,10 +18,12 @@ public enum ChatRole: String, Codable {
 }
 
 /// A structure that represents a single message in a chat conversation.
+
 public struct ChatMessage: Codable, Identifiable {
     /// UUID to conform to the Identifiable protocol
     /// - Note: This property is not de- and encoded. A DTO or other logic might be required if the `ChatMessage` instance is stored locally.
     public var id = UUID()
+
     /// The role of the sender of the message.
     public let role: ChatRole?
     /// The content of the message.
@@ -58,6 +60,18 @@ public struct ChatMessage: Codable, Identifiable {
         try container.encodeIfPresent(self.role, forKey: ChatMessage.CodingKeys.role)
         try container.encodeIfPresent(self.content, forKey: ChatMessage.CodingKeys.content)
 
+    }
+}
+
+extension ChatMessage: Identifiable, Equatable {
+    public var id: UUID {
+        return UUID()
+    }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    public static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
