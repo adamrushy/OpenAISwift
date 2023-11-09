@@ -38,6 +38,7 @@ public struct ChatMessage: Codable, Identifiable {
 
 
     enum CodingKeys: CodingKey {
+        case id
         case role
         case content
     }
@@ -45,6 +46,8 @@ public struct ChatMessage: Codable, Identifiable {
     public init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<ChatMessage.CodingKeys> = try decoder.container(keyedBy: ChatMessage.CodingKeys.self)
 
+
+        self.id = UUID()
         self.role = try container.decodeIfPresent(ChatRole.self, forKey: ChatMessage.CodingKeys.role)
         self.content = try container.decodeIfPresent(String.self, forKey: ChatMessage.CodingKeys.content)
 
