@@ -40,6 +40,10 @@ public class OpenAISwift {
         }
     }
     
+    public init(apiKey: String) {
+        self.config = Config.makeDefaultOpenAI(apiKey: apiKey)
+    }
+    
     public init(config: Config) {
         self.config = config
     }
@@ -288,7 +292,64 @@ extension OpenAISwift {
                 }
         }
     }
+        
+    /// Send a Image Edit request to the OpenAI API
+    /// - Parameters:
+    ///   - image: The Image to be edited. - Must be less than 4MB.
+    ///   - mask: The mask area to be edited - Must be less than 4MB.
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    ///   - completionHandler: Returns an OpenAI Data Model
+
+    public func sendImageEdit(image: Data, mask: Data?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+        
+        let endpoint = OpenAIEndpointProvider.API.imageedits
+        let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: mask, prompt: prompt, n: numImages, size: size.rawValue)
+
+        makeRequest(request: request) { result in
+            switch result {
+                case .success(let success):
+                    do {
+                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        completionHandler(.success(res))
+                    } catch {
+                        completionHandler(.failure(.decodingError(error: error)))
+                    }
+                case .failure(let failure):
+                    completionHandler(.failure(.genericError(error: failure)))
+                }
+        }
+    }
     
+    /// Send a Image Variation request to the OpenAI API
+    /// - Parameters:
+    ///   - image: The Image to be varied. - Must be less than 4MB.
+    ///   - numImages: The number of images to generate, defaults to 1
+    ///   - size: The size of the image, defaults to 1024x1024. There are two other options: 512x512 and 256x256
+    ///   - user: An optional unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
+    ///   - completionHandler: Returns an OpenAI Data Model
+
+    
+    public func sendImageVariations(image: Data, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+        let endpoint = OpenAIEndpointProvider.API.imagevariations
+        let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: nil, prompt: "", n: numImages, size: size.rawValue)
+        makeRequest(request: request) { result in
+            switch result {
+            case .success(let success):
+                do {
+                    let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                    completionHandler(.success(res))
+                } catch {
+                    completionHandler(.failure(.decodingError(error: error)))
+                }
+            case .failure(let failure):
+                completionHandler(.failure(.genericError(error: failure)))
+            }
+        
+        }
+    }
+
     private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
         let session = config.session
         let task = session.dataTask(with: request) { (data, response, error) in
@@ -316,6 +377,61 @@ extension OpenAISwift {
         if let encoded = try? encoder.encode(body) {
             request.httpBody = encoded
         }
+        
+        return request
+    }
+            
+    private func prepareMultipartFormDataRequest(_ endpoint: OpenAIEndpointProvider.API, imageData: Data, maskData: Data?, prompt: String, n: Int, size: String) -> URLRequest {
+        var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
+        urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
+        var request = URLRequest(url: urlComponents!.url!)
+        request.httpMethod = config.endpointProvider.getMethod(api: endpoint)
+        
+        config.authorizeRequest(&request)
+        
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var body = Data()
+                
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"image.png\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: image/png\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        if let maskData = maskData {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"mask\"; filename=\"mask.png\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: image/png\r\n\r\n".data(using: .utf8)!)
+            body.append(maskData)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        
+        // Add the "prompt" field.
+        
+        if !prompt.isEmpty {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"prompt\"\r\n\r\n".data(using: .utf8)!)
+            body.append(prompt.data(using: .utf8)!)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        
+        // Add the "n" field.
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"n\"\r\n\r\n".data(using: .utf8)!)
+        body.append("\(n)".data(using: .utf8)!)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        // Add the "size" field.
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"size\"\r\n\r\n".data(using: .utf8)!)
+        body.append(size.data(using: .utf8)!)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        request.httpBody = body
         
         return request
     }
