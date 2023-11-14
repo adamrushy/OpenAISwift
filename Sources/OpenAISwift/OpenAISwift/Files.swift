@@ -37,7 +37,7 @@ extension OpenAISwift {
         }
     }
     
-    /// listFiles  request to the OpenAI API
+    /// uploadFiles  request to the OpenAI API
     /// - Parameters:
     ///   - File: The URL fo the file to be uploaded.
     ///   - purpose: The intended purpose of the uploaded file.

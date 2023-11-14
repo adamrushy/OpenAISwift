@@ -28,6 +28,7 @@ public struct OpenAIEndpointProvider {
         case files_retrieve
         case fine_tuning_create
         case fine_tuning_list
+        case fine_tuning_list_events
         case fine_tuning_cancel
         case fine_tuning_retrieve
         case images
@@ -89,7 +90,7 @@ public struct OpenAIEndpointProvider {
                 return "/v1/embeddings"
             case .files_list, .files_delete, .files_upload, .files_retrieve:
                 return "v1/files"
-            case .fine_tuning_create, .fine_tuning_list, .fine_tuning_cancel, .fine_tuning_retrieve:
+            case .fine_tuning_create, .fine_tuning_list, .fine_tuning_cancel, .fine_tuning_retrieve, .fine_tuning_list_events:
                 return "v1/fine_tuning/jobs"
             case .images:
                 return "/v1/images/generations"
@@ -118,7 +119,7 @@ public struct OpenAIEndpointProvider {
             switch api {
             case .assistant_delete, .files_delete, .models_delete, .thread_delete:
                 return "DELETE"
-            case .assistant_retrieve, .assistant_list, .files_retrieve, .files_list, .fine_tuning_list, .fine_tuning_retrieve, .models_list, .models_retrieve, .thread_modify, .thread_retrieve, .messages_retrieve, .messages_list, .runs_retrieve, .runs_list, .run_step_list, .run_step_retrive:
+            case .assistant_retrieve, .assistant_list, .files_retrieve, .files_list, .fine_tuning_list, .fine_tuning_list_events, .fine_tuning_retrieve, .models_list, .models_retrieve, .thread_modify, .thread_retrieve, .messages_retrieve, .messages_list, .runs_retrieve, .runs_list, .run_step_list, .run_step_retrive:
                 return "GET"
                 
             case .assistant_create, .assistant_modify, .audio_speech, .audio_translation, .audio_transcription, .completions, .edits, .chat, .images, .embeddings, .files_upload, .fine_tuning_create, .fine_tuning_cancel, .moderations, .image_edits, .image_variations, .thread_create, .messages_create, .messages_modify, .runs_create, .runs_modify, .runs_submit, .runs_cancel, .runs_thread_create:
