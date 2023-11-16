@@ -87,8 +87,14 @@ public struct OpenAIEndpointModelType {
 
     public enum FineTuningJobs: String, Codable {
 
-        /// Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration 2 weeks after it is released. - 4,096 tokens
-        case gpt35Turbo = "gpt-3.5-turbo"
+        /// (experimental — eligible users will be presented with an option to request access in the fine-tuning UI)
+        case gpt4_0613 = "gpt-4-0613"
+
+        /// Most capable GPT-3.5 RECOMMENDED
+        case gpt35Turbo1106 = "gpt-3.5-turbo-1106"
+
+        ///  use 1106 for more updated model
+        case gpt35Turbo0613 = "gpt-3.5-turbo-0613"
 
         /// Replacement for the GPT-3 ada and babbage base models. - 16,384 tokens
         case babbage002 = "babbage-002"
