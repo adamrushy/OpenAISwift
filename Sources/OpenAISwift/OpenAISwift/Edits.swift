@@ -19,7 +19,7 @@ extension OpenAISwift {
     public func sendEdits(with instruction: String, model: OpenAIModelType = .feature(.davinci), input: String = "", completionHandler: @escaping (Result<OpenAI<TextResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.edits
         let body = Instruction(instruction: instruction, model: model.modelName, input: input)
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
         
         makeRequest(request: request) { result in
             switch result {

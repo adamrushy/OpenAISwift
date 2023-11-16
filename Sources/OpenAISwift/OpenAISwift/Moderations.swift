@@ -17,7 +17,7 @@ extension OpenAISwift {
     public func sendModerations(with input: String, model: OpenAIEndpointModelType.Moderations = .textModerationLatest, completionHandler: @escaping (Result<OpenAI<ModerationResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.moderations
         let body = Moderation(input: input, model: model.rawValue)
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
         makeRequest(request: request) { result in
             switch result {

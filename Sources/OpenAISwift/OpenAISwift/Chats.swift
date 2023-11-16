@@ -49,7 +49,7 @@ extension OpenAISwift {
                                     logitBias: logitBias,
                                     stream: false)
 
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
         makeRequest(request: request) { result in
             switch result {
@@ -145,7 +145,7 @@ extension OpenAISwift {
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias,
                                     stream: true)
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
         handler.onEventReceived = onEventReceived
         handler.onComplete = onComplete
         handler.connect(with: request)

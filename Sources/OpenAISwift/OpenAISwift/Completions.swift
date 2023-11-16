@@ -18,7 +18,7 @@ extension OpenAISwift {
     public func sendCompletion(with prompt: String, model: OpenAIEndpointModelType.LegacyCompletions = .davinci, maxTokens: Int = 16, temperature: Double = 1, completionHandler: @escaping (Result<OpenAI<TextResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.completions
         let body = Command(prompt: prompt, model: model.rawValue, maxTokens: maxTokens, temperature: temperature)
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
         makeRequest(request: request) { result in
             switch result {

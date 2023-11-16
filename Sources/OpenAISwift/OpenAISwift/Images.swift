@@ -20,7 +20,7 @@ extension OpenAISwift {
     public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.images
         let body = ImageGeneration(prompt: prompt, n: numImages, size: size, user: user)
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
         makeRequest(request: request) { result in
             switch result {
@@ -49,7 +49,7 @@ extension OpenAISwift {
     public func sendImageEdit(image: Data, mask: Data?, with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.image_edits
-        let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: mask, prompt: prompt, n: numImages, size: size.rawValue)
+        let request = prepareMultipartFormImageDataRequest(endpoint, imageData: image, maskData: mask, prompt: prompt, n: numImages, size: size.rawValue)
 
         makeRequest(request: request) { result in
             switch result {
@@ -77,7 +77,7 @@ extension OpenAISwift {
     
     public func sendImageVariations(image: Data, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.image_variations
-        let request = prepareMultipartFormDataRequest(endpoint, imageData: image, maskData: nil, prompt: "", n: numImages, size: size.rawValue)
+        let request = prepareMultipartFormImageDataRequest(endpoint, imageData: image, maskData: nil, prompt: "", n: numImages, size: size.rawValue)
         makeRequest(request: request) { result in
             switch result {
             case .success(let success):

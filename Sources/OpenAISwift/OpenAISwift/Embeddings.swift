@@ -20,7 +20,7 @@ extension OpenAISwift {
         let body = EmbeddingsInput(input: input,
                                    model: model.rawValue)
 
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
         makeRequest(request: request) { result in
             switch result {
             case .success(let success):

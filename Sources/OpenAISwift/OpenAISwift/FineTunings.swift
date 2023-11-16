@@ -7,12 +7,6 @@
 
 import Foundation
 
-//    case fine_tuning_create
-//    case fine_tuning_list
-//    case fine_tuning_cancel
-//    case fine_tuning_retrieve
-
-
 extension OpenAISwift {
     
     /// uploadFiles  request to the OpenAI API
@@ -32,7 +26,7 @@ extension OpenAISwift {
         let endpoint = OpenAIEndpointProvider.API.fine_tuning_create
                 
         let body = FineTuningRequest(model: model, training_file: training_file, hyperparameters: hyperparameters, suffix: suffix, validation_file: validation_file)
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
         makeRequest(request: request) { result in
             
@@ -60,8 +54,24 @@ extension OpenAISwift {
     public func listFineTuningJobs(after: String?, limit: Int? , completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.fine_tuning_list
-        let body = FineTuningListRequest(after: after, limit: limit)
-        let request = prepareRequest(endpoint, body: body)
+        
+        let ftlr = FineTuningListRequest(after: after, limit: limit)
+        
+        var queryItems: [URLQueryItem] = []
+        
+        if let parameters = ftlr.toDictionary() {
+            queryItems = parameters.compactMap{ key, value in
+                if let stringValue = value as? String {
+                    return URLQueryItem(name: key, value: stringValue)
+                } else if let intValue = value as? Int {
+                    return URLQueryItem(name: key, value: String(intValue))
+                }
+                // Add more cases here for other types if needed
+                return nil
+            }
+        }
+        
+        let request = prepareRequest(endpoint, queryItems: queryItems)
 
         makeRequest(request: request) { result in
             
@@ -88,8 +98,7 @@ extension OpenAISwift {
     public func retrieveFineTuningJob(fine_tuning_job_id: String, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.fine_tuning_retrieve
-        let body = ""
-        var request = prepareRequest(endpoint, body: body)
+        var request = prepareRequest(endpoint, queryItems: nil)
         request.url?.appendPathComponent("/\(fine_tuning_job_id)")
         
         makeRequest(request: request) { result in
@@ -117,8 +126,7 @@ extension OpenAISwift {
     public func cancelFineTuningJob(fine_tuning_job_id: String, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.fine_tuning_cancel
-        let body = ""
-        var request = prepareRequest(endpoint, body: body)
+        var request = prepareRequest(endpoint, queryItems: nil)
         request.url?.appendPathComponent("/\(fine_tuning_job_id)/cancel")
         
         makeRequest(request: request) { result in
@@ -146,8 +154,23 @@ extension OpenAISwift {
     public func listFineTuningEvents(fine_tuning_job_id: String, after: String?, limit: Int?, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.fine_tuning_list_events
-        let body = FineTuningListRequest(after: after, limit: limit)
-        var request = prepareRequest(endpoint, body: body)
+        let ftlr = FineTuningListRequest(after: after, limit: limit)
+        
+        var queryItems: [URLQueryItem] = []
+        
+        if let parameters = ftlr.toDictionary() {
+            queryItems = parameters.compactMap{ key, value in
+                if let stringValue = value as? String {
+                    return URLQueryItem(name: key, value: stringValue)
+                } else if let intValue = value as? Int {
+                    return URLQueryItem(name: key, value: String(intValue))
+                }
+                // Add more cases here for other types if needed
+                return nil
+            }
+        }
+        
+        var request = prepareRequest(endpoint, queryItems: queryItems)
         request.url?.appendPathComponent("/\(fine_tuning_job_id)/events")
         
         makeRequest(request: request) { result in
@@ -165,6 +188,4 @@ extension OpenAISwift {
                 }
         }
     }
-
-
 }

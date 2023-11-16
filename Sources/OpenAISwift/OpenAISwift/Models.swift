@@ -7,11 +7,6 @@
 
 import Foundation
 
-//    case models_list
-//    case models_retrieve
-//    case models_delete
-
-
 extension OpenAISwift {
     
     /// listModels  Lists the currently available models, and provides basic information about each one such as the owner and availability.
@@ -22,8 +17,7 @@ extension OpenAISwift {
     public func listModels( completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.models_list
-        let body = ""
-        let request = prepareRequest(endpoint, body: body)
+        let request = prepareRequest(endpoint, queryItems: nil)
 
         makeRequest(request: request) { result in
             
@@ -51,8 +45,7 @@ extension OpenAISwift {
     public func retrieveModel(model: String, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.models_retrieve
-        let body = ""
-        var request = prepareRequest(endpoint, body: body)
+        var request = prepareRequest(endpoint, queryItems: nil)
         
         request.url?.appendPathComponent("/\(model)")
 
@@ -82,8 +75,7 @@ extension OpenAISwift {
     public func deleteModel(model: String,  completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.models_delete
-        let body = ""
-        var request = prepareRequest(endpoint, body: body)
+        var request = prepareRequest(endpoint, queryItems: nil)
 
         request.url?.appendPathComponent("/\(model)")
 

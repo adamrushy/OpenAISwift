@@ -46,6 +46,8 @@ public struct OpenAIEndpointProvider {
         case messages_retrieve
         case messages_list
         case messages_modify
+        case retrieve_message_file
+        case list_message_file
         case runs_create
         case runs_retrieve
         case runs_modify
@@ -53,7 +55,7 @@ public struct OpenAIEndpointProvider {
         case runs_submit
         case runs_cancel
         case runs_thread_create
-        case run_step_retrive
+        case run_step_retrieve
         case run_step_list
     }
     
@@ -102,8 +104,8 @@ public struct OpenAIEndpointProvider {
                 return "v1/models"
             case .moderations:
                 return "/v1/moderations"
-            case .thread_create, .thread_delete, .thread_modify, .thread_retrieve, .messages_list, .messages_create, .messages_modify, .messages_retrieve,
-                    .runs_create, .runs_retrieve, .runs_modify, .runs_list, .runs_submit, .runs_cancel, .run_step_retrive, .run_step_list:
+            case .thread_create, .thread_delete, .thread_modify, .thread_retrieve, .messages_list, .messages_create, .messages_modify, .messages_retrieve, .retrieve_message_file, .list_message_file,
+                    .runs_create, .runs_retrieve, .runs_modify, .runs_list, .runs_submit, .runs_cancel, .run_step_retrieve, .run_step_list:
                 return "v1/threads"
             case .runs_thread_create:
                 return "v1/threads/runs"
@@ -119,7 +121,7 @@ public struct OpenAIEndpointProvider {
             switch api {
             case .assistant_delete, .files_delete, .models_delete, .thread_delete:
                 return "DELETE"
-            case .assistant_retrieve, .assistant_list, .files_retrieve, .files_list, .fine_tuning_list, .fine_tuning_list_events, .fine_tuning_retrieve, .models_list, .models_retrieve, .thread_modify, .thread_retrieve, .messages_retrieve, .messages_list, .runs_retrieve, .runs_list, .run_step_list, .run_step_retrive:
+            case .assistant_retrieve, .assistant_list, .files_retrieve, .files_list, .fine_tuning_list, .fine_tuning_list_events, .fine_tuning_retrieve, .models_list, .models_retrieve, .thread_modify, .thread_retrieve, .messages_retrieve, .messages_list, .runs_retrieve, .runs_list, .run_step_list, .run_step_retrieve, .retrieve_message_file, .list_message_file:
                 return "GET"
                 
             case .assistant_create, .assistant_modify, .audio_speech, .audio_translation, .audio_transcription, .completions, .edits, .chat, .images, .embeddings, .files_upload, .fine_tuning_create, .fine_tuning_cancel, .moderations, .image_edits, .image_variations, .thread_create, .messages_create, .messages_modify, .runs_create, .runs_modify, .runs_submit, .runs_cancel, .runs_thread_create:

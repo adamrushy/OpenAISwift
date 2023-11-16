@@ -18,8 +18,24 @@ extension OpenAISwift {
     public func listFiles(purpose: FilePurpose?, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.files_list
-        let body = FilesResquest(purpose: purpose?.rawValue)
-        let request = prepareRequest(endpoint, body: body)
+        
+        let pur_request = FilesResquest(purpose: purpose?.rawValue)
+        
+        var queryItems: [URLQueryItem] = []
+        
+        if let parameters = pur_request.toDictionary() {
+            queryItems = parameters.compactMap{ key, value in
+                if let stringValue = value as? String {
+                    return URLQueryItem(name: key, value: stringValue)
+                } else if let intValue = value as? Int {
+                    return URLQueryItem(name: key, value: String(intValue))
+                }
+                // Add more cases here for other types if needed
+                return nil
+            }
+        }
+        
+        let request = prepareRequest(endpoint, queryItems: queryItems)
 
         makeRequest(request: request) { result in
             
@@ -39,22 +55,17 @@ extension OpenAISwift {
     
     /// uploadFiles  request to the OpenAI API
     /// - Parameters:
-    ///   - File: The URL fo the file to be uploaded.
+    ///   - File: The Data of the file to be uploaded.
     ///   - purpose: The intended purpose of the uploaded file.
     ///   Use "fine-tune" for Fine-tuning and "assistants" for Assistants and Messages. This allows us to validate the format of the uploaded file is correct for fine-tuning.
 
     ///   - completionHandler: Returns an OpenAI Data Model
 
-    public func uploadFiles(file: URL, purpose: FilePurpose, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+    public func uploadFiles(file: Data, purpose: FilePurpose, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.files_upload
-        
-        // FIX
-        
-        let filedata = Data()
-        
-        let body = FileUploadResquest(file: filedata, purpose: purpose.rawValue)
-        let request = prepareRequest(endpoint, body: body)
+
+        let request = prepareMultipartFormFileDataRequest(endpoint, file: file, purpose: purpose.rawValue)
 
         makeRequest(request: request) { result in
             
@@ -81,8 +92,7 @@ extension OpenAISwift {
     public func deleteFiles(file_id: String, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.files_delete
-        let body = ""
-        var request = prepareRequest(endpoint, body: body)
+        var request = prepareRequest(endpoint, queryItems: nil)
         
         request.url?.appendPathComponent(file_id)
         
@@ -112,8 +122,7 @@ extension OpenAISwift {
     public func retrieveFile(file_id: String, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.files_delete
-        let body = ""
-        var request = prepareRequest(endpoint, body: body)
+        var request = prepareRequest(endpoint, queryItems: nil)
         
         request.url?.appendPathComponent(file_id)
         
@@ -143,8 +152,8 @@ extension OpenAISwift {
     public func retrieveFileContent(file_id: String, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.files_delete
-        let body = ""
-        var request = prepareRequest(endpoint, body: body)
+        
+        var request = prepareRequest(endpoint, queryItems: nil)
         
         request.url?.appendPathComponent(file_id)
         request.url?.appendPathComponent("/content")
@@ -164,6 +173,4 @@ extension OpenAISwift {
                 }
         }
     }
-
-    
 }

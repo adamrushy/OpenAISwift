@@ -70,9 +70,18 @@ extension OpenAISwift {
         task.resume()
     }
     
-    func prepareRequest<BodyType: Encodable>(_ endpoint: OpenAIEndpointProvider.API, body: BodyType) -> URLRequest {
+    func prepareRequest(
+        _ endpoint: OpenAIEndpointProvider.API,
+        queryItems: [URLQueryItem]? = nil
+    ) -> URLRequest {
+        return prepareRequest(endpoint, body: Optional<String>.none, queryItems: queryItems)
+    }
+    
+    func prepareRequest<BodyType: Encodable>(_ endpoint: OpenAIEndpointProvider.API, body: BodyType?, queryItems: [URLQueryItem]?) -> URLRequest {
+        
         var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
         urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
+        urlComponents?.queryItems = queryItems
         var request = URLRequest(url: urlComponents!.url!)
         request.httpMethod = config.endpointProvider.getMethod(api: endpoint)
         
@@ -80,15 +89,18 @@ extension OpenAISwift {
         
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(body) {
-            request.httpBody = encoded
+        if let body = body {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(body) {
+                request.httpBody = encoded
+            }
         }
         
         return request
     }
             
-    func prepareMultipartFormDataRequest(_ endpoint: OpenAIEndpointProvider.API, imageData: Data, maskData: Data?, prompt: String, n: Int, size: String) -> URLRequest {
+    func prepareMultipartFormImageDataRequest(_ endpoint: OpenAIEndpointProvider.API, imageData: Data, maskData: Data?, prompt: String, n: Int, size: String) -> URLRequest {
+        
         var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
         urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
         var request = URLRequest(url: urlComponents!.url!)
@@ -142,4 +154,38 @@ extension OpenAISwift {
         
         return request
     }
+    
+    func prepareMultipartFormFileDataRequest(_ endpoint: OpenAIEndpointProvider.API, file: Data, purpose: String) -> URLRequest {
+        
+        var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
+        urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
+        var request = URLRequest(url: urlComponents!.url!)
+        request.httpMethod = config.endpointProvider.getMethod(api: endpoint)
+        
+        config.authorizeRequest(&request)
+        
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var body = Data()
+                
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"size\"\r\n\r\n".data(using: .utf8)!)
+        body.append(file)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        // Add the "purpose" field.
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"size\"\r\n\r\n".data(using: .utf8)!)
+        body.append(purpose.data(using: .utf8)!)
+        body.append("\r\n".data(using: .utf8)!)
+
+                
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        request.httpBody = body
+        
+        return request
+    }
+
 }
