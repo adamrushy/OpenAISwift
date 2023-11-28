@@ -34,6 +34,10 @@ public struct ChatMessage: Codable, Identifiable {
         self.role = role
         self.content = content
     }
+    
+    private enum CodingKeys: String, CodingKey {
+        case role, content
+    }
 }
 
 /// A structure that represents a chat conversation.
