@@ -11,37 +11,23 @@ public enum OpenAIError: Error {
 }
 
 public class OpenAISwift {
-    fileprivate let config: Config
-    fileprivate let handler = ServerSentEventsHandler()
-
-    /// Configuration object for the client
-    public struct Config {
-        
-        /// Initialiser
-        /// - Parameter session: the session to use for network requests.
-        public init(baseURL: String, endpointPrivider: OpenAIEndpointProvider, session: URLSession, authorizeRequest: @escaping (inout URLRequest) -> Void) {
-            self.baseURL = baseURL
-            self.endpointProvider = endpointPrivider
-            self.authorizeRequest = authorizeRequest
-            self.session = session
-        }
-        let baseURL: String
-        let endpointProvider: OpenAIEndpointProvider
-        let session:URLSession
-        let authorizeRequest: (inout URLRequest) -> Void
-        
-        public static func makeDefaultOpenAI(apiKey: String) -> Self {
-            .init(baseURL: "https://api.openai.com",
-                  endpointPrivider: OpenAIEndpointProvider(source: .openAI),
-                  session: .shared,
-                  authorizeRequest: { request in
-                    request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-            })
-        }
+    
+    // Typealias for backward compatibility so allowing custom request makers
+    // doesn't introduce breaking changes to the public API
+    public typealias Config = URLSessionRequestHandler
+    
+    fileprivate let requestHandler: OpenAIRequestHandler
+    
+    /// Initialises OpenAISwift with a given request handler
+    /// - Parameter requestHandler: The request handler to make requests with
+    public init(requestHandler: OpenAIRequestHandler) {
+        self.requestHandler = requestHandler
     }
     
+    /// Deprecated initialiser for backwards API support to remove breaking change when introducing OpenAIRequestHandler protocol
+    /// - Parameter config: The config to initialise with
     public init(config: Config) {
-        self.config = config
+        self.requestHandler = config
     }
 }
 
@@ -55,9 +41,8 @@ extension OpenAISwift {
     public func sendCompletion(with prompt: String, model: OpenAIModelType = .gpt3(.davinci), maxTokens: Int = 16, temperature: Double = 1, completionHandler: @escaping (Result<OpenAI<TextResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.completions
         let body = Command(prompt: prompt, model: model.modelName, maxTokens: maxTokens, temperature: temperature)
-        let request = prepareRequest(endpoint, body: body)
         
-        makeRequest(request: request) { result in
+        requestHandler.makeRequest(endpoint, body: body) { result in
             switch result {
             case .success(let success):
                 do {
@@ -81,9 +66,8 @@ extension OpenAISwift {
     public func sendEdits(with instruction: String, model: OpenAIModelType = .feature(.davinci), input: String = "", completionHandler: @escaping (Result<OpenAI<TextResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.edits
         let body = Instruction(instruction: instruction, model: model.modelName, input: input)
-        let request = prepareRequest(endpoint, body: body)
         
-        makeRequest(request: request) { result in
+        requestHandler.makeRequest(endpoint, body: body) { result in
             switch result {
             case .success(let success):
                 do {
@@ -106,9 +90,8 @@ extension OpenAISwift {
     public func sendModerations(with input: String, model: OpenAIModelType = .moderation(.latest), completionHandler: @escaping (Result<OpenAI<ModerationResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.moderations
         let body = Moderation(input: input, model: model.modelName)
-        let request = prepareRequest(endpoint, body: body)
         
-        makeRequest(request: request) { result in
+        requestHandler.makeRequest(endpoint, body: body) { result in
             switch result {
             case .success(let success):
                 do {
@@ -162,10 +145,8 @@ extension OpenAISwift {
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias,
                                     stream: false)
-
-        let request = prepareRequest(endpoint, body: body)
         
-        makeRequest(request: request) { result in
+        requestHandler.makeRequest(endpoint, body: body) { result in
             switch result {
             case .success(let success):
                 if let chatErr = try? JSONDecoder().decode(ChatError.self, from: success) as ChatError {
@@ -197,9 +178,8 @@ extension OpenAISwift {
         let endpoint = OpenAIEndpointProvider.API.embeddings
         let body = EmbeddingsInput(input: input,
                                    model: model.modelName)
-
-        let request = prepareRequest(endpoint, body: body)
-        makeRequest(request: request) { result in
+        
+        requestHandler.makeRequest(endpoint, body: body) { result in
             switch result {
                 case .success(let success):
                     do {
@@ -255,10 +235,8 @@ extension OpenAISwift {
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias,
                                     stream: true)
-        let request = prepareRequest(endpoint, body: body)
-        handler.onEventReceived = onEventReceived
-        handler.onComplete = onComplete
-        handler.connect(with: request)
+        
+        requestHandler.streamRequest(endpoint, body: body, eventReceived: onEventReceived, completion: onComplete)
     }
 
 
@@ -272,9 +250,8 @@ extension OpenAISwift {
     public func sendImages(with prompt: String, numImages: Int = 1, size: ImageSize = .size1024, user: String? = nil, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.images
         let body = ImageGeneration(prompt: prompt, n: numImages, size: size, user: user)
-        let request = prepareRequest(endpoint, body: body)
-
-        makeRequest(request: request) { result in
+        
+        requestHandler.makeRequest(endpoint, body: body) { result in
             switch result {
                 case .success(let success):
                     do {
@@ -287,37 +264,6 @@ extension OpenAISwift {
                     completionHandler(.failure(.genericError(error: failure)))
                 }
         }
-    }
-    
-    private func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
-        let session = config.session
-        let task = session.dataTask(with: request) { (data, response, error) in
-            if let error = error {
-                completionHandler(.failure(error))
-            } else if let data = data {
-                completionHandler(.success(data))
-            }
-        }
-        
-        task.resume()
-    }
-    
-    private func prepareRequest<BodyType: Encodable>(_ endpoint: OpenAIEndpointProvider.API, body: BodyType) -> URLRequest {
-        var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
-        urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
-        var request = URLRequest(url: urlComponents!.url!)
-        request.httpMethod = config.endpointProvider.getMethod(api: endpoint)
-        
-        config.authorizeRequest(&request)
-        
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
-        
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(body) {
-            request.httpBody = encoded
-        }
-        
-        return request
     }
 }
 
