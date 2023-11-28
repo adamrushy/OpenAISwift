@@ -4,10 +4,6 @@ import FoundationNetworking
 import FoundationXML
 #endif
 
-// Typealias for backward compatibility so allowing custom request makers
-// doesn't introduce breaking changes to the public API
-public typealias Config = URLSessionRequestHandler
-
 public enum OpenAIError: Error {
     case genericError(error: Error)
     case decodingError(error: Error)
@@ -15,6 +11,11 @@ public enum OpenAIError: Error {
 }
 
 public class OpenAISwift {
+    
+    // Typealias for backward compatibility so allowing custom request makers
+    // doesn't introduce breaking changes to the public API
+    public typealias Config = URLSessionRequestHandler
+    
     fileprivate let requestHandler: OpenAIRequestHandler
     
     /// Initialises OpenAISwift with a given request handler

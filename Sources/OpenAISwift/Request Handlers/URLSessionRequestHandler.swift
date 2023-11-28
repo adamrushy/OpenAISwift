@@ -131,7 +131,7 @@ extension URLSessionRequestHandler: URLSessionDataDelegate {
     }
 }
 
-public extension Config {
+public extension OpenAISwift.Config {
     
     static func makeDefaultOpenAI(apiKey: String) -> URLSessionRequestHandler {
         return URLSessionRequestHandler(baseURL: "https://api.openai.com",
