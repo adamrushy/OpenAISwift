@@ -76,16 +76,16 @@ public struct OpenAIEndpointProvider {
             switch api {
             case .assistant_create, .assistant_retrieve, .assistant_modify, .assistant_delete, .assistant_list:
                 return "/v1/assistants"
-            case .audio_speech:
-                return "v1/audio/speech"
             case .audio_transcription:
                 return "v1/audio/transcriptions"
             case .audio_translation:
-                return "v1/audio/speech/translations"
+                return "v1/audio/translations"
+            case .audio_speech:
+                return "v1/audio/speech"
             case .chat:
                 return "/v1/chat/completions"
             case .completions:
-                return "/v1/completions"
+                return "/v1/completions"            //  LEGACY
             case .edits:
                 return "/v1/edits"
             case .embeddings:
