@@ -6,17 +6,25 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking) && canImport(FoundationXML)
+import FoundationNetworking
+import FoundationXML
+#endif
 
 class ServerSentEventsHandler: NSObject {
     
     var onEventReceived: ((Result<OpenAI<StreamMessageResult>, OpenAIError>) -> Void)?
     var onComplete: (() -> Void)?
     
-    private lazy var session: URLSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+//    private lazy var session: URLSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+    private var session: URLSession?
     private var task: URLSessionDataTask?
        
     func connect(with request: URLRequest) {
-        task = session.dataTask(with: request)
+        var config = URLSessionConfiguration()
+        config.timeoutIntervalForRequest = 300
+        session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        task = session?.dataTask(with: request)
         task?.resume()
     }
     
