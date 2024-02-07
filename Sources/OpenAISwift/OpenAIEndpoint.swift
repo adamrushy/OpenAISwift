@@ -20,7 +20,6 @@ public struct OpenAIEndpointProvider {
         case audio_translation
         case chat
         case completions
-        case edits
         case embeddings
         case files_upload
         case files_list
@@ -86,8 +85,6 @@ public struct OpenAIEndpointProvider {
                 return "/v1/chat/completions"
             case .completions:
                 return "/v1/completions"            //  LEGACY
-            case .edits:
-                return "/v1/edits"
             case .embeddings:
                 return "/v1/embeddings"
             case .files_list, .files_delete, .files_upload, .files_retrieve:
@@ -124,7 +121,7 @@ public struct OpenAIEndpointProvider {
             case .assistant_retrieve, .assistant_list, .files_retrieve, .files_list, .fine_tuning_list, .fine_tuning_list_events, .fine_tuning_retrieve, .models_list, .models_retrieve, .thread_modify, .thread_retrieve, .messages_retrieve, .messages_list, .runs_retrieve, .runs_list, .run_step_list, .run_step_retrieve, .retrieve_message_file, .list_message_file:
                 return "GET"
                 
-            case .assistant_create, .assistant_modify, .audio_speech, .audio_translation, .audio_transcription, .completions, .edits, .chat, .images, .embeddings, .files_upload, .fine_tuning_create, .fine_tuning_cancel, .moderations, .image_edits, .image_variations, .thread_create, .messages_create, .messages_modify, .runs_create, .runs_modify, .runs_submit, .runs_cancel, .runs_thread_create:
+            case .assistant_create, .assistant_modify, .audio_speech, .audio_translation, .audio_transcription, .completions, .chat, .images, .embeddings, .files_upload, .fine_tuning_create, .fine_tuning_cancel, .moderations, .image_edits, .image_variations, .thread_create, .messages_create, .messages_modify, .runs_create, .runs_modify, .runs_submit, .runs_cancel, .runs_thread_create:
                 return "POST"
             }
         case let .proxy(path: _, method: methodClosure):

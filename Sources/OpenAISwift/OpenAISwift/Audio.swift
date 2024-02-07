@@ -24,7 +24,7 @@ extension OpenAISwift {
     
     // FIX needs to be streaming.
     
-    public func createSpeech(model: OpenAIModelType.TTS, input: String, voice: Voice, response_format: AudioResponseFormat? = .mp3, speed: Double?=1.0, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+    public func createSpeech(model: OpenAIEndpointModelType.TTS, input: String, voice: Voice, response_format: AudioResponseFormat? = .mp3, speed: Double?=1.0, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.audio_speech
         let body = Audio(model: model.rawValue, input: input, voice: voice, response_format: response_format, speed: speed)

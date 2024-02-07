@@ -72,38 +72,6 @@ extension OpenAISwift {
         }
     }
 
-    /// Send a Chat request to the OpenAI API
-    @available(*, deprecated, message: "Use method with `OpenAIEndpointModelType.ChatCompletions` instead")
-    public func sendChat(with messages: [ChatMessage],
-                         model: OpenAIModelType,
-                         user: String? = nil,
-                         temperature: Double? = 1,
-                         topProbabilityMass: Double? = 0,
-                         choices: Int? = 1,
-                         stop: [String]? = nil,
-                         maxTokens: Int? = nil,
-                         presencePenalty: Double? = 0,
-                         frequencyPenalty: Double? = 0,
-                         logitBias: [Int: Double]? = nil,
-                         completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
-        guard let model = OpenAIEndpointModelType.ChatCompletions(rawValue: model.modelName) else {
-            preconditionFailure("Model \(model.modelName) not supported")
-        }
-        sendChat(
-            with: messages,
-            model: model,
-            user: user,
-            temperature: temperature,
-            topProbabilityMass: topProbabilityMass,
-            choices: choices,
-            stop: stop,
-            maxTokens: maxTokens,
-            presencePenalty: presencePenalty,
-            frequencyPenalty: frequencyPenalty,
-            logitBias: logitBias,
-            completionHandler: completionHandler)
-    }
-
     /// Send a Chat request to the OpenAI API with stream enabled
     /// - Parameters:
     ///   - messages: Array of `ChatMessages`
@@ -151,39 +119,6 @@ extension OpenAISwift {
         handler.connect(with: request)
     }
 
-    /// Send a Chat request to the OpenAI API with stream enabled
-    @available(*, deprecated, message: "Use method with `OpenAIEndpointModelType.ChatCompletions` instead")
-    public func sendStreamingChat(with messages: [ChatMessage],
-                                  model: OpenAIModelType,
-                                  user: String? = nil,
-                                  temperature: Double? = 1,
-                                  topProbabilityMass: Double? = 0,
-                                  choices: Int? = 1,
-                                  stop: [String]? = nil,
-                                  maxTokens: Int? = nil,
-                                  presencePenalty: Double? = 0,
-                                  frequencyPenalty: Double? = 0,
-                                  logitBias: [Int: Double]? = nil,
-                                  onEventReceived: ((Result<OpenAI<StreamMessageResult>, OpenAIError>) -> Void)? = nil,
-                                  onComplete: (() -> Void)? = nil) {
-        guard let model = OpenAIEndpointModelType.ChatCompletions(rawValue: model.modelName) else {
-            preconditionFailure("Model \(model.modelName) not supported")
-        }
-        sendStreamingChat(
-            with: messages,
-            model: model,
-            user: user,
-            temperature: temperature,
-            topProbabilityMass: topProbabilityMass,
-            choices: choices,
-            stop: stop,
-            maxTokens: maxTokens,
-            presencePenalty: presencePenalty,
-            frequencyPenalty: frequencyPenalty,
-            logitBias: logitBias,
-            onEventReceived: onEventReceived,
-            onComplete: onComplete)
-    }
 
     
     /// Send a Chat request to the OpenAI API
@@ -233,36 +168,6 @@ extension OpenAISwift {
         }
     }
 
-    /// Send a Chat request to the OpenAI API
-    @available(swift 5.5)
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    @available(*, deprecated, message: "Use method with `OpenAIEndpointModelType.ChatCompletions` instead")
-    public func sendChat(with messages: [ChatMessage],
-                         model: OpenAIModelType,
-                         user: String? = nil,
-                         temperature: Double? = 1,
-                         topProbabilityMass: Double? = 0,
-                         choices: Int? = 1,
-                         stop: [String]? = nil,
-                         maxTokens: Int? = nil,
-                         presencePenalty: Double? = 0,
-                         frequencyPenalty: Double? = 0,
-                         logitBias: [Int: Double]? = nil) async throws -> OpenAI<MessageResult> {
-        guard let model = OpenAIEndpointModelType.ChatCompletions(rawValue: model.modelName) else {
-            preconditionFailure("Model \(model.modelName) not supported")
-        }
-        return try await sendChat(with: messages,
-                                  model: model,
-                                  user: user,
-                                  temperature: temperature,
-                                  topProbabilityMass: topProbabilityMass,
-                                  choices: choices,
-                                  stop: stop,
-                                  maxTokens: maxTokens,
-                                  presencePenalty: presencePenalty,
-                                  frequencyPenalty: frequencyPenalty,
-                                  logitBias: logitBias)
-    }
     
     /// Send a Chat request to the OpenAI API with stream enabled
     /// - Parameters:
@@ -311,44 +216,4 @@ extension OpenAISwift {
                 }
         }
     }
-
-    /// Send a Chat request to the OpenAI API with stream enabled
-    @available(swift 5.5)
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    @available(*, deprecated, message: "Use method with `OpenAIEndpointModelType.ChatCompletions` instead")
-    public func sendStreamingChat(with messages: [ChatMessage],
-                                  model: OpenAIModelType,
-                                  user: String? = nil,
-                                  temperature: Double? = 1,
-                                  topProbabilityMass: Double? = 0,
-                                  choices: Int? = 1,
-                                  stop: [String]? = nil,
-                                  maxTokens: Int? = nil,
-                                  presencePenalty: Double? = 0,
-                                  frequencyPenalty: Double? = 0,
-                                  logitBias: [Int: Double]? = nil) -> AsyncStream<Result<OpenAI<StreamMessageResult>, OpenAIError>> {
-        guard let model = OpenAIEndpointModelType.ChatCompletions(rawValue: model.modelName) else {
-            preconditionFailure("Model \(model.modelName) not supported")
-        }
-        return AsyncStream { continuation in
-            sendStreamingChat(
-                with: messages,
-                model: model,
-                user: user,
-                temperature: temperature,
-                topProbabilityMass: topProbabilityMass,
-                choices: choices,
-                stop: stop,
-                maxTokens: maxTokens,
-                presencePenalty: presencePenalty,
-                frequencyPenalty: frequencyPenalty,
-                logitBias: logitBias,
-                onEventReceived: { result in
-                    continuation.yield(result)
-                }) {
-                    continuation.finish()
-                }
-        }
-    }
-
 }

@@ -33,19 +33,6 @@ extension OpenAISwift {
             }
         }
     }
-
-    /// Send a Moderation request to the OpenAI API
-    @available(*, deprecated, message: "Use method with `OpenAIEndpointModelType.Moderations` instead")
-    public func sendModerations(with input: String, model: OpenAIModelType, completionHandler: @escaping (Result<OpenAI<ModerationResult>, OpenAIError>) -> Void) {
-        guard let model = OpenAIEndpointModelType.Moderations(rawValue: model.modelName) else {
-            preconditionFailure("Model \(model.modelName) not supported")
-        }
-        sendModerations(with: input,
-                        model: model,
-                        completionHandler: completionHandler
-        )
-    }
-
     
     /// Send a Moderation request to the OpenAI API
     /// - Parameters:
@@ -61,16 +48,4 @@ extension OpenAISwift {
             }
         }
     }
-
-    /// Send a Moderation request to the OpenAI API
-    @available(swift 5.5)
-    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    @available(*, deprecated, message: "Use method with `OpenAIEndpointModelType.Moderations` instead")
-    public func sendModerations(with input: String = "", model: OpenAIModelType) async throws -> OpenAI<ModerationResult> {
-        guard let model = OpenAIEndpointModelType.Moderations(rawValue: model.modelName) else {
-            preconditionFailure("Model \(model.modelName) not supported")
-        }
-        return try await sendModerations(with: input, model: model)
-    }
-
 }
