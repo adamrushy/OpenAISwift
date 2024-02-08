@@ -34,7 +34,10 @@ extension OpenAISwift {
                          presencePenalty: Double? = 0,
                          frequencyPenalty: Double? = 0,
                          logitBias: [Int: Double]? = nil,
-                         completionHandler: @escaping (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
+                         responseFormat: String? = nil,
+                         completionHandler: @escaping
+                         
+    (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
         let endpoint = OpenAIEndpointProvider.API.chat
         let body = ChatConversation(user: user,
                                     messages: messages,
@@ -47,6 +50,7 @@ extension OpenAISwift {
                                     presencePenalty: presencePenalty,
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias,
+                                    responseFormat: responseFormat,
                                     stream: false)
 
         let request = prepareRequest(endpoint, body: body, queryItems: nil)
@@ -98,6 +102,7 @@ extension OpenAISwift {
                                   presencePenalty: Double? = 0,
                                   frequencyPenalty: Double? = 0,
                                   logitBias: [Int: Double]? = nil,
+                                  responseFormat: String? = nil,
                                   onEventReceived: ((Result<OpenAI<StreamMessageResult>, OpenAIError>) -> Void)? = nil,
                                   onComplete: (() -> Void)? = nil) {
         let endpoint = OpenAIEndpointProvider.API.chat
@@ -112,6 +117,7 @@ extension OpenAISwift {
                                     presencePenalty: presencePenalty,
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias,
+                                    responseFormat: responseFormat,
                                     stream: true)
         let request = prepareRequest(endpoint, body: body, queryItems: nil)
         handler.onEventReceived = onEventReceived
@@ -138,7 +144,7 @@ extension OpenAISwift {
     @available(swift 5.5)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     public func sendChat(with messages: [ChatMessage],
-                         model: OpenAIEndpointModelType.ChatCompletions = .gpt4,
+                         model: OpenAIEndpointModelType.ChatCompletions = .gpt4turbo,
                          user: String? = nil,
                          temperature: Double? = 1,
                          topProbabilityMass: Double? = 0,
@@ -147,7 +153,8 @@ extension OpenAISwift {
                          maxTokens: Int? = nil,
                          presencePenalty: Double? = 0,
                          frequencyPenalty: Double? = 0,
-                         logitBias: [Int: Double]? = nil) async throws -> OpenAI<MessageResult> {
+                         logitBias: [Int: Double]? = nil,
+                         responseFormat: String? = nil) async throws -> OpenAI<MessageResult> {
         return try await withCheckedThrowingContinuation { continuation in
             sendChat(with: messages,
                      model: model,
@@ -159,7 +166,8 @@ extension OpenAISwift {
                      maxTokens: maxTokens,
                      presencePenalty: presencePenalty,
                      frequencyPenalty: frequencyPenalty,
-                     logitBias: logitBias) { result in
+                     logitBias: logitBias,
+                     responseFormat: responseFormat) { result in
                 switch result {
                 case .success: continuation.resume(with: result)
                 case .failure(let failure): continuation.resume(throwing: failure)
@@ -186,7 +194,7 @@ extension OpenAISwift {
     @available(swift 5.5)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     public func sendStreamingChat(with messages: [ChatMessage],
-                                  model: OpenAIEndpointModelType.ChatCompletions = .gpt35Turbo,
+                                  model: OpenAIEndpointModelType.ChatCompletions = .gpt4turbo,
                                   user: String? = nil,
                                   temperature: Double? = 1,
                                   topProbabilityMass: Double? = 0,
@@ -195,7 +203,8 @@ extension OpenAISwift {
                                   maxTokens: Int? = nil,
                                   presencePenalty: Double? = 0,
                                   frequencyPenalty: Double? = 0,
-                                  logitBias: [Int: Double]? = nil) -> AsyncStream<Result<OpenAI<StreamMessageResult>, OpenAIError>> {
+                                  logitBias: [Int: Double]? = nil,
+                                  responseFormat: String? = nil) -> AsyncStream<Result<OpenAI<StreamMessageResult>, OpenAIError>> {
         return AsyncStream { continuation in
             sendStreamingChat(
                 with: messages,
@@ -209,6 +218,7 @@ extension OpenAISwift {
                 presencePenalty: presencePenalty,
                 frequencyPenalty: frequencyPenalty,
                 logitBias: logitBias,
+                responseFormat: responseFormat,
                 onEventReceived: { result in
                     continuation.yield(result)
                 }) {
