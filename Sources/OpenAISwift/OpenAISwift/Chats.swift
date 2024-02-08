@@ -50,7 +50,7 @@ extension OpenAISwift {
                                     presencePenalty: presencePenalty,
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias,
-                                    responseFormat: responseFormat,
+//                                    responseFormat: responseFormat,
                                     stream: false)
 
         let request = prepareRequest(endpoint, body: body, queryItems: nil)
@@ -117,7 +117,7 @@ extension OpenAISwift {
                                     presencePenalty: presencePenalty,
                                     frequencyPenalty: frequencyPenalty,
                                     logitBias: logitBias,
-                                    responseFormat: responseFormat,
+//                                    responseFormat: responseFormat,
                                     stream: true)
         let request = prepareRequest(endpoint, body: body, queryItems: nil)
         handler.onEventReceived = onEventReceived
