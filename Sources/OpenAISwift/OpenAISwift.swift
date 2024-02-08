@@ -79,14 +79,19 @@ extension OpenAISwift {
     
     func prepareRequest<BodyType: Encodable>(_ endpoint: OpenAIEndpointProvider.API, body: BodyType?, queryItems: [URLQueryItem]?) -> URLRequest {
         
+        var request: URLRequest!
+        
         var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
         urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
-        if queryItems != nil {
-            urlComponents?.queryItems = queryItems
+        urlComponents?.queryItems = queryItems
+        
+        if let _ = urlComponents?.url {
+            request = URLRequest(url: urlComponents!.url!)
+            request.httpMethod = config.endpointProvider.getMethod(api: endpoint)
+        } else {
+            print ("Bad URL")
+            return URLRequest(url: URL(fileURLWithPath: ""))
         }
-        print(urlComponents)
-        var request = URLRequest(url: urlComponents!.url!)
-        request.httpMethod = config.endpointProvider.getMethod(api: endpoint)
         
         config.authorizeRequest(&request)
         
