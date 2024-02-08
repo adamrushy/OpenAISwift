@@ -76,11 +76,11 @@ public struct OpenAIEndpointProvider {
             case .assistant_create, .assistant_retrieve, .assistant_modify, .assistant_delete, .assistant_list:
                 return "/v1/assistants"
             case .audio_transcription:
-                return "v1/audio/transcriptions"
+                return "/v1/audio/transcriptions"
             case .audio_translation:
-                return "v1/audio/translations"
+                return "/v1/audio/translations"
             case .audio_speech:
-                return "v1/audio/speech"
+                return "/v1/audio/speech"
             case .chat:
                 return "/v1/chat/completions"
             case .completions:
@@ -88,9 +88,9 @@ public struct OpenAIEndpointProvider {
             case .embeddings:
                 return "/v1/embeddings"
             case .files_list, .files_delete, .files_upload, .files_retrieve:
-                return "v1/files"
+                return "/v1/files"
             case .fine_tuning_create, .fine_tuning_list, .fine_tuning_cancel, .fine_tuning_retrieve, .fine_tuning_list_events:
-                return "v1/fine_tuning/jobs"
+                return "/v1/fine_tuning/jobs"
             case .images:
                 return "/v1/images/generations"
             case .image_edits:
@@ -98,14 +98,14 @@ public struct OpenAIEndpointProvider {
             case .image_variations:
                 return "/v1/images/variations"
             case .models_list, .models_delete, .models_retrieve:
-                return "v1/models"
+                return "/v1/models"
             case .moderations:
                 return "/v1/moderations"
             case .thread_create, .thread_delete, .thread_modify, .thread_retrieve, .messages_list, .messages_create, .messages_modify, .messages_retrieve, .retrieve_message_file, .list_message_file,
                     .runs_create, .runs_retrieve, .runs_modify, .runs_list, .runs_submit, .runs_cancel, .run_step_retrieve, .run_step_list:
-                return "v1/threads"
+                return "/v1/threads"
             case .runs_thread_create:
-                return "v1/threads/runs"
+                return "/v1/threads/runs"
             }
         case let .proxy(path: pathClosure, method: _):
             return pathClosure(api)
