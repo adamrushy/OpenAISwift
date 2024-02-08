@@ -81,6 +81,16 @@ extension OpenAISwift {
         
         var request: URLRequest!
         
+        if let baseURL = URL(string: config.baseURL) {
+            print("Base URL is valid: \(baseURL)")
+            let urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
+            if urlComponents == nil {
+                print("Failed to create URLComponents")
+            }
+        } else {
+            print("Invalid base URL")
+        }
+        
         var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
         urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
         urlComponents?.queryItems = queryItems
