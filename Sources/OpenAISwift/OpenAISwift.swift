@@ -81,7 +81,10 @@ extension OpenAISwift {
         
         var urlComponents = URLComponents(url: URL(string: config.baseURL)!, resolvingAgainstBaseURL: true)
         urlComponents?.path = config.endpointProvider.getPath(api: endpoint)
-        urlComponents?.queryItems = queryItems
+        if queryItems != nil {
+            urlComponents?.queryItems = queryItems
+        }
+        print(urlComponents)
         var request = URLRequest(url: urlComponents!.url!)
         request.httpMethod = config.endpointProvider.getMethod(api: endpoint)
         
