@@ -56,6 +56,9 @@ extension OpenAISwift {
     func makeRequest(request: URLRequest, completionHandler: @escaping (Result<Data, Error>) -> Void) {
         let session = config.session
         let task = session.dataTask(with: request) { (data, response, error) in
+            print (data)
+            print(response)
+            print(error)
             if let error = error {
                 completionHandler(.failure(error))
             } else if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
