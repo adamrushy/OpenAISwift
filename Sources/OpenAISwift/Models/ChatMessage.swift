@@ -7,6 +7,20 @@
 
 import Foundation
 
+// Define the enum for the type property, ensuring it conforms to String and Codable
+public enum ResponseFormatType: String, Codable {
+    case text = "text"
+    case jsonObject = "json_object"
+}
+
+// Define the structure for the response_format, making it Codable for easy encoding and decoding
+public struct ResponseFormat: Codable {
+    var type: ResponseFormatType?
+}
+
+
+
+
 /// An enumeration of possible roles in a chat conversation.
 public enum ChatRole: String, Codable {
     /// The role for the system that manages the chat interface.
@@ -138,3 +152,4 @@ public struct ChatError: Codable {
 
     public let error: Payload
 }
+
