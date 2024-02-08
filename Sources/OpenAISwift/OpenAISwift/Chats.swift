@@ -55,6 +55,7 @@ extension OpenAISwift {
 
         let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
+        print(request)
         makeRequest(request: request) { result in
             switch result {
             case .success(let success):
