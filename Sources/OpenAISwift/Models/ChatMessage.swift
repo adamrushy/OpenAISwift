@@ -16,6 +16,11 @@ public enum ResponseFormatType: String, Codable {
 // Define the structure for the response_format, making it Codable for easy encoding and decoding
 public struct ResponseFormatChat: Codable {
     var type: ResponseFormatType?
+    
+    // Explicitly declare a public initializer
+       public init(type: ResponseFormatType?) {
+           self.type = type
+       }
 }
 
 
