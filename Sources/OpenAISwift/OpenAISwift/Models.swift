@@ -14,7 +14,7 @@ extension OpenAISwift {
     ///
     ///   - completionHandler: Returns a list of model Objects
     
-    public func listModels( completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+    public func listModels( completionHandler: @escaping (Result<OpenAI<ModelResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.models_list
         let request = prepareRequest(endpoint, queryItems: nil)
@@ -24,7 +24,7 @@ extension OpenAISwift {
             switch result {
                 case .success(let success):
                     do {
-                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        let res = try JSONDecoder().decode(OpenAI<ModelResult>.self, from: success)
                         completionHandler(.success(res))
                     } catch {
                         completionHandler(.failure(.decodingError(error: error)))
@@ -42,7 +42,7 @@ extension OpenAISwift {
     ///
     ///   - completionHandler: Returns a model Object
     
-    public func retrieveModel(model: String, completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+    public func retrieveModel(model: String, completionHandler: @escaping (Result<OpenAI<ModelResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.models_retrieve
         var request = prepareRequest(endpoint, queryItems: nil)
@@ -54,7 +54,7 @@ extension OpenAISwift {
             switch result {
                 case .success(let success):
                     do {
-                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        let res = try JSONDecoder().decode(OpenAI<ModelResult>.self, from: success)
                         completionHandler(.success(res))
                     } catch {
                         completionHandler(.failure(.decodingError(error: error)))
@@ -72,7 +72,7 @@ extension OpenAISwift {
     ///   - model: String. The ID of the model to use for this request.
     ///   - completionHandler: Returns deletion status
     
-    public func deleteModel(model: String,  completionHandler: @escaping (Result<OpenAI<UrlResult>, OpenAIError>) -> Void) {
+    public func deleteModel(model: String,  completionHandler: @escaping (Result<OpenAI<ModelResult>, OpenAIError>) -> Void) {
         
         let endpoint = OpenAIEndpointProvider.API.models_delete
         var request = prepareRequest(endpoint, queryItems: nil)
@@ -85,7 +85,7 @@ extension OpenAISwift {
             switch result {
                 case .success(let success):
                     do {
-                        let res = try JSONDecoder().decode(OpenAI<UrlResult>.self, from: success)
+                        let res = try JSONDecoder().decode(OpenAI<ModelResult>.self, from: success)
                         completionHandler(.success(res))
                     } catch {
                         completionHandler(.failure(.decodingError(error: error)))
