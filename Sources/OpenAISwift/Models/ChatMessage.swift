@@ -144,7 +144,7 @@ public struct ChatConversation: Encodable {
         case presencePenalty = "presence_penalty"
         case frequencyPenalty = "frequency_penalty"
         case logitBias = "logit_bias"
-//        case responseFormat = "response_format"
+        case responseFormat = "response_format"
         case stream
     }
 }
