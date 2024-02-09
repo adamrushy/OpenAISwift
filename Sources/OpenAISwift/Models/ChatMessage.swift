@@ -158,10 +158,17 @@ public struct ChatError: Codable {
     public let error: Payload
 }
 
+public struct Usage:Codable {
+    public let prompt_tokens: Int
+    public let completion_tokens: Int
+    public let total_tokens: Int
+}
+
 public struct ChatResponse: Codable {
     public let id: String
     public let object: String
     public let created: Int
     public let model: String
+    public let usage: Usage
 }
 

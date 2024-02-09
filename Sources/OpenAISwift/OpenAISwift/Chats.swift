@@ -53,6 +53,7 @@ extension OpenAISwift {
                                     responseFormat: responseFormat,
                                     stream: false)
 
+        print("Body: \(body)")
         let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
         makeRequest(request: request) { result in
