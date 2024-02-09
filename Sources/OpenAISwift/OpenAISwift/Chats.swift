@@ -34,11 +34,14 @@ extension OpenAISwift {
                          presencePenalty: Double? = 0,
                          frequencyPenalty: Double? = 0,
                          logitBias: [Int: Double]? = nil,
-                         responseFormat: String? = nil,
+                         responseFormat: ResponseFormat? = nil,
                          completionHandler: @escaping
                          
     (Result<OpenAI<MessageResult>, OpenAIError>) -> Void) {
+        
+        
         let endpoint = OpenAIEndpointProvider.API.chat
+                
         let body = ChatConversation(user: user,
                                     messages: messages,
                                     model: model.rawValue,
@@ -119,7 +122,7 @@ extension OpenAISwift {
                                   presencePenalty: Double? = 0,
                                   frequencyPenalty: Double? = 0,
                                   logitBias: [Int: Double]? = nil,
-                                  responseFormat: String? = nil,
+                                  responseFormat: ResponseFormat? = nil,
                                   onEventReceived: ((Result<OpenAI<StreamMessageResult>, OpenAIError>) -> Void)? = nil,
                                   onComplete: (() -> Void)? = nil) {
         let endpoint = OpenAIEndpointProvider.API.chat
@@ -171,7 +174,7 @@ extension OpenAISwift {
                          presencePenalty: Double? = 0,
                          frequencyPenalty: Double? = 0,
                          logitBias: [Int: Double]? = nil,
-                         responseFormat: String? = nil) async throws -> OpenAI<MessageResult> {
+                         responseFormat: ResponseFormat? = nil) async throws -> OpenAI<MessageResult> {
         return try await withCheckedThrowingContinuation { continuation in
             sendChat(with: messages,
                      model: model,
@@ -221,7 +224,7 @@ extension OpenAISwift {
                                   presencePenalty: Double? = 0,
                                   frequencyPenalty: Double? = 0,
                                   logitBias: [Int: Double]? = nil,
-                                  responseFormat: String? = nil) -> AsyncStream<Result<OpenAI<StreamMessageResult>, OpenAIError>> {
+                                  responseFormat: ResponseFormat? = nil) -> AsyncStream<Result<OpenAI<StreamMessageResult>, OpenAIError>> {
         return AsyncStream { continuation in
             sendStreamingChat(
                 with: messages,

@@ -7,23 +7,18 @@
 
 import Foundation
 
-// Define the enum for the type property, ensuring it conforms to String and Codable
-public enum ResponseFormatType: String, Codable {
-    case text = "text"
-    case jsonObject = "json_object"
+public struct ResponseFormat: Codable {
+    public enum FormatType: String, Codable {
+        case text = "text"
+        case jsonObject = "json_object"
+    }
+
+    public var type: FormatType?
+
+    public init(type: FormatType? = .text) {  // Defaults to 'text'
+        self.type = type
+    }
 }
-
-// Define the structure for the response_format, making it Codable for easy encoding and decoding
-public struct ResponseFormatChat: Codable {
-    var type: ResponseFormatType?
-    
-    // Explicitly declare a public initializer
-       public init(type: ResponseFormatType?) {
-           self.type = type
-       }
-}
-
-
 
 
 /// An enumeration of possible roles in a chat conversation.
@@ -126,7 +121,9 @@ public struct ChatConversation: Encodable {
     /// Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID in the OpenAI Tokenizer—not English words) to an associated bias value from -100 to 100. Values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
     let logitBias: [Int: Double]?
     
-    let responseFormat: String?
+    /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+    
+    let responseFormat: ResponseFormat?
 
     /// If you're generating long completions, waiting for the response can take many seconds. To get responses sooner, you can 'stream' the completion as it's being generated. This allows you to start printing or processing the beginning of the completion before the full completion is finished.
     /// https://github.com/openai/openai-cookbook/blob/main/examples/How_to_stream_completions.ipynb
