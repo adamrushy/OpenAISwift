@@ -53,7 +53,18 @@ extension OpenAISwift {
                                     responseFormat: responseFormat,
                                     stream: false)
 
-        print("Body: \(body)")
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted // Optional, for easier reading of the JSON
+
+        do {
+            let jsonData = try encoder.encode(body)
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("JSON String: \(jsonString)")
+                // Use `jsonData` as the HTTP request body
+            }
+        } catch {
+            print("Error encoding JSON: \(error)")
+        }
         let request = prepareRequest(endpoint, body: body, queryItems: nil)
 
         makeRequest(request: request) { result in
