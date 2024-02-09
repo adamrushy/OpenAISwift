@@ -158,3 +158,10 @@ public struct ChatError: Codable {
     public let error: Payload
 }
 
+public struct ChatResponse: Codable {
+    public let id: String
+    public let object: String
+    public let created: Int
+    public let model: String
+}
+

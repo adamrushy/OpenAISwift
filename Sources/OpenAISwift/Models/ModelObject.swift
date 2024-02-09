@@ -13,5 +13,4 @@ public struct ModelObject: Codable {
     public let created: Int
     public let object: String
     public let owned_by: String
-    
 }

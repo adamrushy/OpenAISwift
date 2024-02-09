@@ -58,6 +58,11 @@ extension OpenAISwift {
         makeRequest(request: request) { result in
             switch result {
             case .success(let success):
+                
+                if let resp = try? JSONDecoder().decode(ChatResponse.self, from: success) {
+                    print (resp)
+                }
+                
                 if let chatErr = try? JSONDecoder().decode(ChatError.self, from: success) as ChatError {
                     completionHandler(.failure(.chatError(error: chatErr.error)))
                     return
