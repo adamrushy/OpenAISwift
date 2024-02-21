@@ -62,7 +62,7 @@ extension OpenAISwift {
         do {
             let jsonData = try encoder.encode(body)
             if let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("JSON String: \(jsonString)")
+//                print("JSON String: \(jsonString)")
                 // Use `jsonData` as the HTTP request body
             }
         } catch {
