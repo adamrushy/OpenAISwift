@@ -50,3 +50,10 @@ public struct EmbeddingResult: Payload {
 public struct ModerationResult: Payload {
     public let flagged: Bool?
 }
+
+public struct ModelResult: Payload {
+    public let id: String
+    public let created: Int
+    public let object: String
+    public let owned_by: String
+}
