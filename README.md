@@ -40,7 +40,7 @@ Import the framework in your project:
 
 [Create an OpenAI API key](https://platform.openai.com/account/api-keys) and add it to your configuration:
 
-`let openAI = OpenAISwift(authToken: "TOKEN")`
+`let openAI = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: MY SECRET KEY))`
 
 This framework supports Swift concurrency; each example below has both an async/await and completion handler variant.
 
@@ -91,7 +91,7 @@ do {
         ChatMessage(role: .assistant, content: "The Los Angeles Dodgers won the World Series in 2020."),
         ChatMessage(role: .user, content: "Where was it played?")
     ]
-                
+
     let result = try await openAI.sendChat(with: chat)
     // use result
 } catch {
