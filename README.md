@@ -20,14 +20,6 @@ You can use Swift Package Manager to integrate the library by adding the followi
 
 `.package(url: "https://github.com/adamrushy/OpenAISwift.git", from: "1.2.0")`
 
-### CocoaPods
-
-[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate `OpenAISwift` into your Xcode project using CocoaPods, specify it in your `Podfile`:
-
-```ruby
-pod 'OpenAISwift'
-```
-
 ### Manual
 
 Copy the source files into your own project.
@@ -40,152 +32,17 @@ Import the framework in your project:
 
 [Create an OpenAI API key](https://platform.openai.com/account/api-keys) and add it to your configuration:
 
-`let openAI = OpenAISwift(authToken: "TOKEN")`
+let TOKEN = "sk-...... "
 
-This framework supports Swift concurrency; each example below has both an async/await and completion handler variant.
+let openAI: OpenAISwift = OpenAISwift(config: OpenAISwift.Config.makeDefaultOpenAI(apiKey: "TOKEN"))
 
-### [Completions](https://platform.openai.com/docs/api-reference/completions)
 
-Predict completions for input text.
+To follow [OpenAI requirements](https://platform.openai.com/docs/api-reference/authentication) 
 
-```swift
-openAI.sendCompletion(with: "Hello how are you") { result in // Result<OpenAI, OpenAIError>
-    switch result {
-    case .success(let success):
-        print(success.choices.first?.text ?? "")
-    case .failure(let failure):
-        print(failure.localizedDescription)
-    }
-}
-```
+>  Remember that your API key is a secret! Do not share it with others or expose it in any client-side code (browsers, apps). Production requests must be routed through your own backend server where your API key can be securely loaded from an environment variable or key management service.
 
-This returns an `OpenAI` object containing the completions.
+and basic industrial safety you should not call OpenAI API directly. 
 
-Other API parameters are also supported:
-
-```swift
-do {
-    let result = try await openAI.sendCompletion(
-        with: "What's your favorite color?",
-        model: .gpt3(.davinci), // optional `OpenAIModelType`
-        maxTokens: 16,          // optional `Int?`
-        temperature: 1          // optional `Double?`
-    )
-    // use result
-} catch {
-    // ...
-}
-```
-
-For a full list of supported models, see [OpenAIModelType.swift](https://github.com/adamrushy/OpenAISwift/blob/main/Sources/OpenAISwift/Models/OpenAIModelType.swift). For more information on the models see the [OpenAI API Documentation](https://beta.openai.com/docs/models).
-
-### [Chat](https://platform.openai.com/docs/api-reference/chat)
-
-Get responses to chat conversations through ChatGPT (aka GPT-3.5) and GPT-4 (in beta).
-
-```swift
-do {
-    let chat: [ChatMessage] = [
-        ChatMessage(role: .system, content: "You are a helpful assistant."),
-        ChatMessage(role: .user, content: "Who won the world series in 2020?"),
-        ChatMessage(role: .assistant, content: "The Los Angeles Dodgers won the World Series in 2020."),
-        ChatMessage(role: .user, content: "Where was it played?")
-    ]
-                
-    let result = try await openAI.sendChat(with: chat)
-    // use result
-} catch {
-    // ...
-}
-```
-
-All API parameters are supported, except streaming message content before it is completed:
-
-```swift
-do {
-    let chat: [ChatMessage] = [...]
-
-    let result = try await openAI.sendChat(
-        with: chat,
-        model: .chat(.chatgpt),         // optional `OpenAIModelType`
-        user: nil,                      // optional `String?`
-        temperature: 1,                 // optional `Double?`
-        topProbabilityMass: 1,          // optional `Double?`
-        choices: 1,                     // optional `Int?`
-        stop: nil,                      // optional `[String]?`
-        maxTokens: nil,                 // optional `Int?`
-        presencePenalty: nil,           // optional `Double?`
-        frequencyPenalty: nil,          // optional `Double?`
-        logitBias: nil                 // optional `[Int: Double]?` (see inline documentation)
-    )
-    // use result
-} catch {
-    // ...
-}
-```
-
-### [Images (DALL·E)](https://platform.openai.com/docs/api-reference/images/create)
-
-Generate an image based on a prompt.
-
-```swift
-openAI.sendImages(with: "A 3d render of a rocket ship", numImages: 1, size: .size1024) { result in // Result<OpenAI, OpenAIError>
-    switch result {
-    case .success(let success):
-        print(success.data.first?.url ?? "")
-    case .failure(let failure):
-        print(failure.localizedDescription)
-    }
-}
-```
-
-### [Edits](https://platform.openai.com/docs/api-reference/edits)
-
-Edits text based on a prompt and an instruction.
-
-```swift
-do {
-    let result = try await openAI.sendEdits(
-        with: "Improve the tone of this text.",
-        model: .feature(.davinci),               // optional `OpenAIModelType`
-        input: "I am resigning!"
-    )
-    // use result
-} catch {
-    // ...
-}
-```
-
-### [Moderation](https://platform.openai.com/docs/api-reference/moderations)
-
-Classifies text for moderation purposes (see OpenAI reference for more info).
-
-```swift
-do {
-    let result = try await openAI.sendModeration(
-        with: "Some harmful text...",
-        model: .moderation(.latest)     // optional `OpenAIModelType`
-    )
-    // use result
-} catch {
-    // ...
-}
-```
-
-### [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)
-
-Get a vector representation of a given input that can be easily consumed by machine learning models and algorithms.(see OpenAI reference for more info).
-
-```swift
-do {
-    let result = try await openAI.sendEmbeddings(
-        with: "The food was delicious and the waiter..."
-    )
-    // use result
-} catch {
-    // ...
-}
-```
 
 ## Contribute ❤️
 

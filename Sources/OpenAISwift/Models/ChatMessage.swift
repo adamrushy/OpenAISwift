@@ -7,6 +7,20 @@
 
 import Foundation
 
+public struct ResponseFormat: Codable {
+    public enum FormatType: String, Codable {
+        case text = "text"
+        case jsonObject = "json_object"
+    }
+
+    public var type: FormatType?
+
+    public init(type: FormatType? = .text) {  // Defaults to 'text'
+        self.type = type
+    }
+}
+
+
 /// An enumeration of possible roles in a chat conversation.
 public enum ChatRole: String, Codable {
     /// The role for the system that manages the chat interface.
@@ -18,9 +32,12 @@ public enum ChatRole: String, Codable {
 }
 
 /// A structure that represents a single message in a chat conversation.
+
 public struct ChatMessage: Codable, Identifiable {
-    // uuid to conform to Identifiable protocol
+    /// UUID to conform to the Identifiable protocol
+    /// - Note: This property is not de- and encoded. A DTO or other logic might be required if the `ChatMessage` instance is stored locally.
     public var id = UUID()
+
     /// The role of the sender of the message.
     public let role: ChatRole?
     /// The content of the message.
@@ -33,6 +50,39 @@ public struct ChatMessage: Codable, Identifiable {
     public init(role: ChatRole, content: String) {
         self.role = role
         self.content = content
+    }
+
+    enum CodingKeys: CodingKey {
+        case id
+        case role
+        case content
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container: KeyedDecodingContainer<ChatMessage.CodingKeys> = try decoder.container(keyedBy: ChatMessage.CodingKeys.self)
+
+
+        self.id = UUID()
+        self.role = try container.decodeIfPresent(ChatRole.self, forKey: ChatMessage.CodingKeys.role)
+        self.content = try container.decodeIfPresent(String.self, forKey: ChatMessage.CodingKeys.content)
+
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container: KeyedEncodingContainer<ChatMessage.CodingKeys> = encoder.container(keyedBy: ChatMessage.CodingKeys.self)
+
+        try container.encodeIfPresent(self.role, forKey: ChatMessage.CodingKeys.role)
+        try container.encodeIfPresent(self.content, forKey: ChatMessage.CodingKeys.content)
+
+    }
+}
+
+extension ChatMessage:  Equatable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    public static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
@@ -71,6 +121,10 @@ public struct ChatConversation: Encodable {
     /// Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID in the OpenAI Tokenizer—not English words) to an associated bias value from -100 to 100. Values between -1 and 1 should decrease or increase likelihood of selection; values like -100 or 100 should result in a ban or exclusive selection of the relevant token.
     let logitBias: [Int: Double]?
     
+    /// Setting to { "type": "json_object" } enables JSON mode, which guarantees the message the model generates is valid JSON.
+    
+    let responseFormat: ResponseFormat?
+
     /// If you're generating long completions, waiting for the response can take many seconds. To get responses sooner, you can 'stream' the completion as it's being generated. This allows you to start printing or processing the beginning of the completion before the full completion is finished.
     /// https://github.com/openai/openai-cookbook/blob/main/examples/How_to_stream_completions.ipynb
     let stream: Bool?
@@ -87,6 +141,7 @@ public struct ChatConversation: Encodable {
         case presencePenalty = "presence_penalty"
         case frequencyPenalty = "frequency_penalty"
         case logitBias = "logit_bias"
+        case responseFormat = "response_format"
         case stream
     }
 }
@@ -96,6 +151,21 @@ public struct ChatError: Codable {
         public let message, type: String
         public let param, code: String?
     }
-    
+
     public let error: Payload
 }
+
+public struct Usage:Codable {
+    public let prompt_tokens: Int
+    public let completion_tokens: Int
+    public let total_tokens: Int
+}
+
+public struct ChatResponse: Codable {
+    public let id: String
+    public let object: String
+    public let created: Int
+    public let model: String
+    public let usage: Usage
+}
+
