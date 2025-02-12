@@ -3,6 +3,10 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking) && canImport(FoundationXML)
+import FoundationNetworking
+import FoundationXML
+#endif
 
 public struct OpenAIEndpointProvider {
     public enum API {
